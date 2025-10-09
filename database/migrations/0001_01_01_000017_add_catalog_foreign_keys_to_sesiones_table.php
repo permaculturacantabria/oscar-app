@@ -11,8 +11,28 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Skip this migration - foreign keys will be added in migration 0018 after all tables exist
-        // This prevents dependency issues during migration
+        Schema::table('sesiones', function (Blueprint $table) {
+            // Check if foreign key constraints don't already exist before adding them
+            $foreignKeys = Schema::getConnection()->getDoctrineSchemaManager()->listTableForeignKeys('sesiones');
+            $existingConstraints = array_map(function($fk) { return $fk->getName(); }, $foreignKeys);
+            
+            // Only add constraints that don't already exist
+            if (!in_array('sesiones_tema_id_foreign', $existingConstraints) && Schema::hasTable('temas')) {
+                $table->foreign('tema_id', 'sesiones_tema_id_foreign')->references('id')->on('temas')->onDelete('set null');
+            }
+            if (!in_array('sesiones_memoria_temprana_id_foreign', $existingConstraints) && Schema::hasTable('memorias_tempranas')) {
+                $table->foreign('memoria_temprana_id', 'sesiones_memoria_temprana_id_foreign')->references('id')->on('memorias_tempranas')->onDelete('set null');
+            }
+            if (!in_array('sesiones_mensaje_angustioso_id_foreign', $existingConstraints) && Schema::hasTable('mensajes_angustiosos')) {
+                $table->foreign('mensaje_angustioso_id', 'sesiones_mensaje_angustioso_id_foreign')->references('id')->on('mensajes_angustiosos')->onDelete('set null');
+            }
+            if (!in_array('sesiones_direccion_id_foreign', $existingConstraints) && Schema::hasTable('direcciones')) {
+                $table->foreign('direccion_id', 'sesiones_direccion_id_foreign')->references('id')->on('direcciones')->onDelete('set null');
+            }
+            if (!in_array('sesiones_contradiccion_id_foreign', $existingConstraints) && Schema::hasTable('contradicciones')) {
+                $table->foreign('contradiccion_id', 'sesiones_contradiccion_id_foreign')->references('id')->on('contradicciones')->onDelete('set null');
+            }
+        });
     }
 
     /**
