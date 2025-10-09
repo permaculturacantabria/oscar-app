@@ -1,0 +1,284 @@
+{
+  "info": {
+    "name": "Oscar App API",
+    "description": "API collection for Oscar App - Feature Tests",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"telefono\": \"+34612345678\",\n  \"email\": \"test@example.com\",\n  \"nombre\": \"Test User\",\n  \"password\": \"password123\",\n  \"password_confirmation\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"telefono\": \"+34612345678\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "login"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Escuchas",
+      "item": [
+        {
+          "name": "Create Escucha",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre_asignado\": \"Test Escucha\",\n  \"telefono\": \"+34987654321\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/escuchas",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "escuchas"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Procesos",
+      "item": [
+        {
+          "name": "Create Proceso (10 sessions)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"escucha_id\": 1,\n  \"nombre_proceso\": \"Proceso de 10 Pasos\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/procesos",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "procesos"]
+            },
+            "description": "Creates a Proceso with 10 pending sessions with correct names"
+          }
+        },
+        {
+          "name": "List Procesos",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/procesos",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "procesos"]
+            }
+          }
+        },
+        {
+          "name": "Get Proceso Sessions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/procesos/1/sesiones",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "procesos", "1", "sesiones"]
+            },
+            "description": "Gets all sessions for a specific proceso"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Sesiones",
+      "item": [
+        {
+          "name": "Create Sesion with Catalog Text",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usuario_id\": 1,\n  \"escucha_id\": 1,\n  \"nombre_sesion\": \"Sesion con Catalogo\",\n  \"tipo_sesion\": \"individual\",\n  \"estado\": \"pendiente\",\n  \"fecha\": \"2024-01-01\",\n  \"hora\": \"10:00\",\n  \"duracion\": 60,\n  \"tema\": \"Nuevo Tema de Prueba\",\n  \"restimulacion\": \"Nueva Restimulacion de Prueba\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/sesiones",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "sesiones"]
+            },
+            "description": "Creates a Sesion with new catalog text, automatically creates catalog entries and assigns FKs scoped by user"
+          }
+        },
+        {
+          "name": "List Sesiones",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/sesiones",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "sesiones"]
+            }
+          }
+        },
+        {
+          "name": "Update Sesion Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"completada\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/sesiones/1/status",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "sesiones", "1", "status"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Catalogos",
+      "item": [
+        {
+          "name": "List Temas",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/temas",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "temas"]
+            }
+          }
+        },
+        {
+          "name": "Quick Store Tema",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"texto\": \"Tema Rapido\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/temas/quick",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "temas", "quick"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

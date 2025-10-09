@@ -118,6 +118,55 @@
                         </li>
                     </ul>
                 </div>
+                <div class="bg-[#dbdbd7] dark:bg-[#3E3E3A] relative lg:-ml-px -mb-px lg:mb-0 rounded-t-lg lg:rounded-t-none lg:rounded-r-lg aspect-[335/376] lg:aspect-auto w-full lg:w-[438px] shrink-0 overflow-hidden p-6">
+                    <h2 class="text-lg font-medium mb-4 text-[#1b1b18] dark:text-[#EDEDEC]">Trabajo Realizado - API de Diario de Sesiones</h2>
+                    <div class="space-y-4 text-sm text-[#706f6c] dark:text-[#A1A09A]">
+                        <div>
+                            <h3 class="font-medium text-[#1b1b18] dark:text-[#EDEDEC] mb-2">Modelos Principales:</h3>
+                            <ul class="space-y-1">
+                                <li><strong>User:</strong> Usuarios del sistema con autenticación</li>
+                                <li><strong>Escucha:</strong> Registros de escuchas con propietarios y realizadores</li>
+                                <li><strong>Proceso:</strong> Procesos de 10 pasos asociados a escuchas</li>
+                                <li><strong>Sesion:</strong> Sesiones con múltiples catálogos relacionados</li>
+                                <li><strong>Tema, MemoriaTemprana, MensajeAngustioso, etc.:</strong> Catálogos para clasificar elementos en sesiones</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="font-medium text-[#1b1b18] dark:text-[#EDEDEC] mb-2">Endpoints API:</h3>
+                            <ul class="space-y-1">
+                                <li><code class="bg-white dark:bg-[#161615] px-1 rounded">POST /api/v1/register</code> - Registro de usuarios</li>
+                                <li><code class="bg-white dark:bg-[#161615] px-1 rounded">POST /api/v1/login</code> - Autenticación</li>
+                                <li><code class="bg-white dark:bg-[#161615] px-1 rounded">GET /api/v1/dashboard</code> - Resumen del usuario</li>
+                                <li><code class="bg-white dark:bg-[#161615] px-1 rounded">GET /api/v1/escuchas</code> - Lista de escuchas</li>
+                                <li><code class="bg-white dark:bg-[#161615] px-1 rounded">GET /api/v1/sesiones</code> - Lista de sesiones</li>
+                                <li><code class="bg-white dark:bg-[#161615] px-1 rounded">GET /api/v1/procesos</code> - Lista de procesos</li>
+                                <li><code class="bg-white dark:bg-[#161615] px-1 rounded">GET /api/v1/temas</code> - Catálogo de temas</li>
+                                <li>Y muchos más catálogos...</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="font-medium text-[#1b1b18] dark:text-[#EDEDEC] mb-2">Características:</h3>
+                            <ul class="space-y-1">
+                                <li>Autenticación con Sanctum</li>
+                                <li>Validación de requests</li>
+                                <li>Observers para lógica de negocio</li>
+                                <li>Enums para tipos de datos</li>
+                                <li>Relaciones complejas entre modelos</li>
+                                <li>Dashboard con estadísticas</li>
+                                <li>Jobs para procesamiento asíncrono</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        @if (Route::has('login'))
+            <div class="h-14.5 hidden lg:block"></div>
+        @endif
+    </body>
+</html>
+                </div>
                 <div class="bg-[#fff2f2] dark:bg-[#1D0002] relative lg:-ml-px -mb-px lg:mb-0 rounded-t-lg lg:rounded-t-none lg:rounded-r-lg aspect-[335/376] lg:aspect-auto w-full lg:w-[438px] shrink-0 overflow-hidden">
                     {{-- Laravel Logo --}}
                     <svg class="w-full text-[#F53003] dark:text-[#F61500] transition-all translate-y-0 opacity-100 max-w-none duration-750 starting:opacity-0 starting:translate-y-6" viewBox="0 0 438 104" fill="none" xmlns="http://www.w3.org/2000/svg">
