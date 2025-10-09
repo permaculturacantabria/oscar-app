@@ -15,9 +15,9 @@
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #ff8c42 0%, #ff6b1a 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -42,7 +42,7 @@
         .auth-logo {
             font-size: 2rem;
             font-weight: 700;
-            color: #667eea;
+            color: #ff6b1a;
             margin-bottom: 10px;
         }
         
@@ -76,14 +76,14 @@
             border-radius: 8px;
             font-size: 1rem;
             transition: all 0.3s;
-            background: #f8fafc;
+            background: #f5f5f0;
         }
         
         .form-input:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #ff6b1a;
             background: white;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            box-shadow: 0 0 0 3px rgba(255, 107, 26, 0.1);
         }
         
         .form-input.is-invalid {
@@ -99,7 +99,7 @@
         .btn {
             width: 100%;
             padding: 12px;
-            background: #667eea;
+            background: #ff6b1a;
             color: white;
             border: none;
             border-radius: 8px;
@@ -110,9 +110,9 @@
         }
         
         .btn:hover {
-            background: #5a67d8;
+            background: #e55a15;
             transform: translateY(-1px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 5px 15px rgba(255, 107, 26, 0.3);
         }
         
         .form-check {
@@ -138,7 +138,7 @@
         }
         
         .auth-links a {
-            color: #667eea;
+            color: #ff6b1a;
             text-decoration: none;
             font-weight: 500;
         }

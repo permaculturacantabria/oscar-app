@@ -15,9 +15,9 @@
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #ff8c42 0%, #ff6b1a 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -43,7 +43,7 @@
         .auth-logo {
             font-size: 2rem;
             font-weight: 700;
-            color: #667eea;
+            color: #ff6b1a;
             margin-bottom: 10px;
         }
         
@@ -77,14 +77,14 @@
             border-radius: 8px;
             font-size: 1rem;
             transition: all 0.3s;
-            background: #f8fafc;
+            background: #f5f5f0;
         }
         
         .form-input:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #ff6b1a;
             background: white;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            box-shadow: 0 0 0 3px rgba(255, 107, 26, 0.1);
         }
         
         .form-input.is-invalid {
@@ -100,7 +100,7 @@
         .btn {
             width: 100%;
             padding: 12px;
-            background: #667eea;
+            background: #ff6b1a;
             color: white;
             border: none;
             border-radius: 8px;
@@ -111,9 +111,9 @@
         }
         
         .btn:hover {
-            background: #5a67d8;
+            background: #e55a15;
             transform: translateY(-1px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 5px 15px rgba(255, 107, 26, 0.3);
         }
         
         .auth-links {
@@ -124,7 +124,7 @@
         }
         
         .auth-links a {
-            color: #667eea;
+            color: #ff6b1a;
             text-decoration: none;
             font-weight: 500;
         }
@@ -151,8 +151,8 @@
         }
         
         .password-requirements {
-            background: #f0f4ff;
-            border: 1px solid #c7d2fe;
+            background: #fff5f0;
+            border: 1px solid #fed7aa;
             border-radius: 8px;
             padding: 15px;
             margin-bottom: 20px;
@@ -160,14 +160,14 @@
         }
         
         .password-requirements h4 {
-            color: #4338ca;
+            color: #ea580c;
             margin-bottom: 8px;
             font-size: 0.9rem;
         }
         
         .password-requirements ul {
             list-style: none;
-            color: #6366f1;
+            color: #ff6b1a;
         }
         
         .password-requirements li {
