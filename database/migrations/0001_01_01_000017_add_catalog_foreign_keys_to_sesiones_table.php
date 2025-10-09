@@ -11,21 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('sesiones', function (Blueprint $table) {
-            // Add foreign key constraints to catalog tables
-            $table->foreign('tema_id')->references('id')->on('temas')->onDelete('set null');
-            $table->foreign('memoria_temprana_id')->references('id')->on('memorias_tempranas')->onDelete('set null');
-            $table->foreign('mensaje_angustioso_id')->references('id')->on('mensajes_angustiosos')->onDelete('set null');
-            $table->foreign('direccion_id')->references('id')->on('direcciones')->onDelete('set null');
-            $table->foreign('contradiccion_id')->references('id')->on('contradicciones')->onDelete('set null');
-            $table->foreign('contradiccion_escucha_id')->references('id')->on('contradicciones_escuchas')->onDelete('set null');
-            $table->foreign('pedacito_realidad_id')->references('id')->on('pedacitos_realidad')->onDelete('set null');
-            $table->foreign('restimulacion_id')->references('id')->on('restimulaciones')->onDelete('set null');
-            $table->foreign('compromiso_social_id')->references('id')->on('compromisos_sociales')->onDelete('set null');
-            $table->foreign('proximo_paso_id')->references('id')->on('proximos_pasos')->onDelete('set null');
-            $table->foreign('sesion_fisica_id')->references('id')->on('sesiones_fisicas')->onDelete('set null');
-            $table->foreign('necesidad_congelada_id')->references('id')->on('necesidades_congeladas')->onDelete('set null');
-        });
+        // Skip this migration - foreign keys will be added in migration 0018 after all tables exist
+        // This prevents dependency issues during migration
     }
 
     /**
