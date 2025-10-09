@@ -17,7 +17,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #ff8c42 0%, #ff6b1a 100%);
+            background: linear-gradient(135deg, #f5f5f0 0%, #e8e8e3 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -77,7 +77,7 @@
             border-radius: 8px;
             font-size: 1rem;
             transition: all 0.3s;
-            background: #f5f5f0;
+            background: white;
         }
         
         .form-input:focus {
@@ -137,7 +137,7 @@
             position: absolute;
             top: 20px;
             left: 20px;
-            color: white;
+            color: #666;
             text-decoration: none;
             font-weight: 500;
             display: flex;
@@ -151,8 +151,8 @@
         }
         
         .password-requirements {
-            background: #fff5f0;
-            border: 1px solid #fed7aa;
+            background: #f5f5f0;
+            border: 1px solid #e8e8e3;
             border-radius: 8px;
             padding: 15px;
             margin-bottom: 20px;
@@ -160,14 +160,14 @@
         }
         
         .password-requirements h4 {
-            color: #ea580c;
+            color: #ff6b1a;
             margin-bottom: 8px;
             font-size: 0.9rem;
         }
         
         .password-requirements ul {
             list-style: none;
-            color: #ff6b1a;
+            color: #666;
         }
         
         .password-requirements li {

@@ -18,17 +18,17 @@
         body { font-family: 'Inter', sans-serif; background: #f5f5f0; color: #333; }
         
         /* Sidebar */
-        .sidebar { position: fixed; left: 0; top: 0; width: 280px; height: 100vh; background: #2c2c2c; color: white; z-index: 1000; transition: transform 0.3s; }
-        .sidebar-header { padding: 20px; border-bottom: 1px solid #404040; }
-        .sidebar-logo { font-size: 1.5rem; font-weight: 700; color: #ff8c42; }
+        .sidebar { position: fixed; left: 0; top: 0; width: 280px; height: 100vh; background: white; color: #333; z-index: 1000; transition: transform 0.3s; border-right: 1px solid #e8e8e3; }
+        .sidebar-header { padding: 20px; border-bottom: 1px solid #e8e8e3; }
+        .sidebar-logo { font-size: 1.5rem; font-weight: 700; color: #ff6b1a; }
         .sidebar-nav { padding: 20px 0; }
-        .nav-item { display: block; padding: 12px 20px; color: #e0e0e0; text-decoration: none; transition: all 0.3s; }
-        .nav-item:hover, .nav-item.active { background: #404040; color: white; }
+        .nav-item { display: block; padding: 12px 20px; color: #666; text-decoration: none; transition: all 0.3s; }
+        .nav-item:hover, .nav-item.active { background: #f5f5f0; color: #ff6b1a; }
         .nav-item i { width: 20px; margin-right: 10px; }
         
         /* Main Content */
         .main-content { margin-left: 280px; min-height: 100vh; }
-        .topbar { background: white; padding: 15px 30px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
+        .topbar { background: white; padding: 15px 30px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e8e8e3; }
         .topbar-title { font-size: 1.5rem; font-weight: 600; }
         .user-menu { display: flex; align-items: center; gap: 15px; }
         .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: #ff6b1a; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; }
@@ -36,21 +36,21 @@
         /* Dashboard Content */
         .dashboard-content { padding: 30px; }
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .stat-card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .stat-card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border: 1px solid #e8e8e3; }
         .stat-header { display: flex; justify-content: between; align-items: center; margin-bottom: 15px; }
         .stat-icon { width: 50px; height: 50px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white; }
         .stat-number { font-size: 2rem; font-weight: 700; margin-bottom: 5px; }
         .stat-label { color: #666; font-size: 0.9rem; }
         
         /* Charts and Tables */
-        .chart-container { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 30px; }
+        .chart-container { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 30px; border: 1px solid #e8e8e3; }
         .chart-title { font-size: 1.3rem; font-weight: 600; margin-bottom: 20px; }
         
-        .table-container { background: white; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); overflow: hidden; }
+        .table-container { background: white; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); overflow: hidden; border: 1px solid #e8e8e3; }
         .table { width: 100%; }
         .table th { background: #f5f5f0; padding: 15px; text-align: left; font-weight: 600; color: #4a5568; }
-        .table td { padding: 15px; border-top: 1px solid #e2e8f0; }
-        .table tr:hover { background: #f5f5f0; }
+        .table td { padding: 15px; border-top: 1px solid #e8e8e3; }
+        .table tr:hover { background: #f9f9f9; }
         
         /* Buttons */
         .btn { display: inline-block; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 500; transition: all 0.3s; border: none; cursor: pointer; }
@@ -79,8 +79,8 @@
         
         /* Quick Actions */
         .quick-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px; }
-        .quick-action { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center; text-decoration: none; color: #333; transition: transform 0.3s; }
-        .quick-action:hover { transform: translateY(-2px); }
+        .quick-action { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); text-align: center; text-decoration: none; color: #333; transition: transform 0.3s; border: 1px solid #e8e8e3; }
+        .quick-action:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
         .quick-action i { font-size: 2rem; color: #ff6b1a; margin-bottom: 10px; }
     </style>
 </head>

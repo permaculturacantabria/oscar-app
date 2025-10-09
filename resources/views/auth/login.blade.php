@@ -17,7 +17,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #ff8c42 0%, #ff6b1a 100%);
+            background: linear-gradient(135deg, #f5f5f0 0%, #e8e8e3 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -76,7 +76,7 @@
             border-radius: 8px;
             font-size: 1rem;
             transition: all 0.3s;
-            background: #f5f5f0;
+            background: white;
         }
         
         .form-input:focus {
@@ -151,7 +151,7 @@
             position: absolute;
             top: 20px;
             left: 20px;
-            color: white;
+            color: #666;
             text-decoration: none;
             font-weight: 500;
             display: flex;

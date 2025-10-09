@@ -20,22 +20,22 @@
                 * { margin: 0; padding: 0; box-sizing: border-box; }
                 body { font-family: 'Inter', sans-serif; line-height: 1.6; color: #333; }
                 .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
-                .hero { background: linear-gradient(135deg, #ff8c42 0%, #ff6b1a 100%); color: white; min-height: 100vh; display: flex; align-items: center; }
+                .hero { background: linear-gradient(135deg, #f5f5f0 0%, #e8e8e3 100%); color: #333; min-height: 100vh; display: flex; align-items: center; }
                 .hero-content { text-align: center; }
-                .hero h1 { font-size: 3.5rem; font-weight: 700; margin-bottom: 1rem; }
-                .hero p { font-size: 1.25rem; margin-bottom: 2rem; opacity: 0.9; }
+                .hero h1 { font-size: 3.5rem; font-weight: 700; margin-bottom: 1rem; color: #2c2c2c; }
+                .hero p { font-size: 1.25rem; margin-bottom: 2rem; opacity: 0.8; color: #555; }
                 .btn { display: inline-block; padding: 12px 30px; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.3s; }
-                .btn-primary { background: #f5f5f0; color: #ff6b1a; }
-                .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
-                .features { padding: 80px 0; background: #f5f5f0; }
+                .btn-primary { background: #ff6b1a; color: white; }
+                .btn-primary:hover { background: #e55a15; transform: translateY(-2px); box-shadow: 0 10px 25px rgba(255, 107, 26, 0.3); }
+                .features { padding: 80px 0; background: white; }
                 .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-top: 50px; }
-                .feature-card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); text-align: center; transition: transform 0.3s; }
-                .feature-card:hover { transform: translateY(-5px); }
+                .feature-card { background: #f5f5f0; padding: 30px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); text-align: center; transition: transform 0.3s; border: 1px solid #e8e8e3; }
+                .feature-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
                 .feature-icon { font-size: 3rem; color: #ff6b1a; margin-bottom: 20px; }
-                .stats { padding: 80px 0; background: #2c2c2c; color: white; }
+                .stats { padding: 80px 0; background: #f5f5f0; color: #333; }
                 .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; text-align: center; }
-                .stat-number { font-size: 3rem; font-weight: 700; color: #ff8c42; }
-                .navbar { position: fixed; top: 0; width: 100%; background: rgba(245,245,240,0.95); backdrop-filter: blur(10px); z-index: 1000; padding: 15px 0; }
+                .stat-number { font-size: 3rem; font-weight: 700; color: #ff6b1a; }
+                .navbar { position: fixed; top: 0; width: 100%; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); z-index: 1000; padding: 15px 0; border-bottom: 1px solid #e8e8e3; }
                 .nav-content { display: flex; justify-content: space-between; align-items: center; }
                 .logo { font-size: 1.5rem; font-weight: 700; color: #ff6b1a; }
                 .nav-links { display: flex; gap: 30px; }
@@ -81,7 +81,7 @@
             <div class="container">
                 <div class="hero-content">
                     <h1>Diario de Sesiones Terapéuticas</h1>
-                    <p>Gestiona y organiza tus sesiones de escucha con una plataforma moderna y eficiente</p>
+                    <p>Tu diario de sesiones. Gestiona y organiza tu proceso eficientemente</p>
                     @if (Route::has('login'))
                         @auth
                             <a href="{{ url('/dashboard') }}" class="btn btn-primary">
