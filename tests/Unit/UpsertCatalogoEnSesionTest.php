@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use App\Models\Tema;
+use App\Models\User;
 use App\Services\UpsertCatalogoEnSesion;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -13,7 +14,8 @@ class UpsertCatalogoEnSesionTest extends TestCase
 
     public function test_upserts_catalog_entries_and_returns_fk_data()
     {
-        $userId = 1;
+        $user = User::factory()->create();
+        $userId = $user->id;
         $data = [
             'tema' => 'Test Theme',
             'memoria_temprana' => 'Test Memory',
@@ -31,7 +33,8 @@ class UpsertCatalogoEnSesionTest extends TestCase
 
     public function test_idempotent_upsert_does_not_create_duplicates()
     {
-        $userId = 1;
+        $user = User::factory()->create();
+        $userId = $user->id;
         $data = [
             'tema' => 'Test Theme',
         ];
@@ -51,7 +54,8 @@ class UpsertCatalogoEnSesionTest extends TestCase
 
     public function test_ignores_fields_not_in_data()
     {
-        $userId = 1;
+        $user = User::factory()->create();
+        $userId = $user->id;
         $data = [
             'tema' => 'Test Theme',
         ];

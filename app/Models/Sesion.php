@@ -15,6 +15,8 @@ class Sesion extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $table = 'sesiones';
+
     protected $fillable = [
         'usuario_id',
         'escucha_id',
