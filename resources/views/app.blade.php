@@ -39,8 +39,26 @@
         <div class="loading">
             <h1>Emociona - Diario de Sesiones</h1>
             <p>Cargando aplicación...</p>
-            <small>Si esta página no cambia, es posible que necesites compilar los assets del frontend.</small>
+            <small>Si esta página no cambia, revisa la consola del navegador para ver errores.</small>
         </div>
     </div>
+
+    <!-- Error handling script -->
+    <script>
+        // Show any JavaScript errors
+        window.addEventListener('error', function(e) {
+            console.error('JavaScript Error:', e.error);
+            document.querySelector('.loading p').textContent = 'Error al cargar la aplicación. Revisa la consola.';
+        });
+        
+        // Timeout to show if React doesn't mount
+        setTimeout(function() {
+            const loadingDiv = document.querySelector('.loading');
+            if (loadingDiv && loadingDiv.style.display !== 'none') {
+                console.warn('React app did not mount after 10 seconds');
+                loadingDiv.innerHTML = '<h1>Emociona - Diario de Sesiones</h1><p>La aplicación React no se ha cargado.</p><small>Revisa la consola del navegador (F12) para ver errores específicos.</small>';
+            }
+        }, 10000);
+    </script>
 </body>
 </html>
