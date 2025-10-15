@@ -13,7 +13,9 @@ import {
     LogOut,
     Search,
     ChevronDown,
-    ChevronRight
+    ChevronRight,
+    BookOpen,
+    FileText
 } from 'lucide-react';
 import SidebarItem from './SidebarItem';
 
@@ -22,7 +24,7 @@ const Sidebar = ({ collapsed, activeSection, setActiveSection, darkMode, toggleD
 
     const menuItems = [
         { id: 'dashboard', label: 'Inicio', icon: LayoutDashboard },
-        { id: 'sessions', label: 'Mis sesiones', icon: NotebookPen },
+        { id: 'sessions', label: 'Mis sesiones', icon: BookOpen },
         { id: 'listeners', label: 'Mis escuchas', icon: Users },
         {
             id: 'catalogs',
@@ -73,7 +75,7 @@ const Sidebar = ({ collapsed, activeSection, setActiveSection, darkMode, toggleD
             <div className="p-4 border-b border-gray-800 dark:border-gray-700">
                 <div className="flex items-center space-x-3">
                     <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <NotebookPen size={20} />
+                        <FileText size={20} />
                     </div>
                     <AnimatePresence>
                         {!collapsed && (
