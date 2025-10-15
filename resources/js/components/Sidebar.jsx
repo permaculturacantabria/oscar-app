@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     LayoutDashboard,
-    NotebookPen,
     Users,
     FolderTree,
     Calendar,
