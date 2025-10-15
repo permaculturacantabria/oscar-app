@@ -29,8 +29,8 @@
         }
     </style>
     
-    <!-- Conditional Vite Assets (only if built) -->
-    @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
+    <!-- Vite Assets -->
+    @if (file_exists(public_path('build/manifest.json')))
         @vite(['resources/css/app.css', 'resources/js/app.jsx'])
     @endif
 </head>
