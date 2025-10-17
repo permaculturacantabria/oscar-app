@@ -29,9 +29,12 @@
         }
     </style>
     
-    <!-- Vite Assets -->
+    <!-- Vite Assets - CSP Compliant -->
     @if (file_exists(public_path('build/manifest.json')))
-        @vite(['resources/css/app.css', 'resources/js/app.jsx'])
+        @vite(['resources/js/app-csp.jsx'])
+    @else
+        <!-- Fallback CSS -->
+        <link rel="stylesheet" href="{{ asset('resources/css/app.css') }}">
     @endif
 </head>
 <body class="antialiased">
