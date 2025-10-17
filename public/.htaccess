@@ -5,17 +5,17 @@
 
     RewriteEngine On
 
-    # Working CSP - Allow current domain and protocols
+    # Disable CSP temporarily to allow application to work
     <IfModule mod_headers.c>
-        # CSP policy that works with current hosting setup
-        Header always set Content-Security-Policy "default-src 'self' http: https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' http: https:; style-src 'self' 'unsafe-inline' http: https: https://fonts.bunny.net; font-src 'self' https://fonts.bunny.net http: https: data:; img-src 'self' http: https: data: blob:; connect-src 'self' http: https: wss: ws:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none';"
+        # Remove any existing CSP headers
+        Header unset Content-Security-Policy
+        Header unset Content-Security-Policy-Report-Only
         
-        # Additional security headers
+        # Keep other security headers
         Header always set X-Content-Type-Options "nosniff"
         Header always set X-Frame-Options "DENY"
         Header always set X-XSS-Protection "1; mode=block"
         Header always set Referrer-Policy "strict-origin-when-cross-origin"
-        Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=(), usb=(), magnetometer=(), gyroscope=(), fullscreen=(self)"
     </IfModule>
 
     # Handle Angular and Vue.js History API fallback
