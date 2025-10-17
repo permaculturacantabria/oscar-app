@@ -5,10 +5,10 @@
 
     RewriteEngine On
 
-    # Pragmatic CSP - Allow 'unsafe-eval' temporarily for compatibility
+    # Working CSP - Allow current domain and protocols
     <IfModule mod_headers.c>
-        # CSP policy that allows eval() while maintaining other security measures
-        Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https://fonts.bunny.net; font-src 'self' https://fonts.bunny.net data:; img-src 'self' https: data: blob:; connect-src 'self' https: wss:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none';"
+        # CSP policy that works with current hosting setup
+        Header always set Content-Security-Policy "default-src 'self' http: https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' http: https:; style-src 'self' 'unsafe-inline' http: https: https://fonts.bunny.net; font-src 'self' https://fonts.bunny.net http: https: data:; img-src 'self' http: https: data: blob:; connect-src 'self' http: https: wss: ws:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none';"
         
         # Additional security headers
         Header always set X-Content-Type-Options "nosniff"
