@@ -5,10 +5,10 @@
 
     RewriteEngine On
 
-    # Ultra-Strict Content Security Policy - NO eval(), allow necessary resources
+    # Maximum Security CSP - NO eval(), NO unsafe-inline for scripts
     <IfModule mod_headers.c>
-        # CSP policy allowing external fonts and inline scripts for Laravel
-        Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.bunny.net; font-src 'self' https://fonts.bunny.net data:; img-src 'self' https: data: blob:; connect-src 'self' https: wss:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none';"
+        # Ultra-strict CSP policy with static files only
+        Header always set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.bunny.net; font-src 'self' https://fonts.bunny.net data:; img-src 'self' https: data: blob:; connect-src 'self' https: wss:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none';"
         
         # Additional security headers
         Header always set X-Content-Type-Options "nosniff"

@@ -29,10 +29,9 @@
         }
     </style>
     
-    <!-- Vite Assets - Vanilla JavaScript (100% CSP Compliant) -->
-    @if (file_exists(public_path('build/manifest.json')))
-        @vite(['resources/css/app.css', 'resources/js/app-vanilla.js'])
-    @endif
+    <!-- Static Assets - 100% CSP Compliant (No Build Tools) -->
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <script src="{{ asset('js/app.js') }}" defer></script>
 </head>
 <body class="antialiased">
     <div id="app">
