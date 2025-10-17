@@ -5,10 +5,10 @@
 
     RewriteEngine On
 
-    # Strict Content Security Policy - NO 'unsafe-eval' allowed
+    # Ultra-Strict Content Security Policy - NO eval(), minimal inline
     <IfModule mod_headers.c>
-        # CSP-compliant policy without eval() support
-        Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https:; font-src 'self' https: data:; img-src 'self' https: data: blob:; connect-src 'self' https: wss:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none';"
+        # Maximum security CSP policy for vanilla JavaScript
+        Header always set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self' https: data:; img-src 'self' https: data: blob:; connect-src 'self' https: wss:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none';"
         
         # Additional security headers
         Header always set X-Content-Type-Options "nosniff"

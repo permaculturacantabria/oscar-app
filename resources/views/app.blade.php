@@ -29,9 +29,9 @@
         }
     </style>
     
-    <!-- Vite Assets - CSP Compliant -->
+    <!-- Vite Assets - Vanilla JavaScript (100% CSP Compliant) -->
     @if (file_exists(public_path('build/manifest.json')))
-        @vite(['resources/css/app.css', 'resources/js/app-csp.jsx'])
+        @vite(['resources/css/app.css', 'resources/js/app-vanilla.js'])
     @endif
 </head>
 <body class="antialiased">

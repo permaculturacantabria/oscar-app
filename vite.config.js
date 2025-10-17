@@ -1,17 +1,12 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
-import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
     plugins: [
         laravel({
-            input: ['resources/css/app.css', 'resources/js/app-csp.jsx'],
+            input: ['resources/css/app.css', 'resources/js/app-vanilla.js'],
             refresh: true,
-        }),
-        react({
-            // Simple React configuration without Babel plugins
-            jsxRuntime: 'automatic'
         }),
         tailwindcss(),
     ],
@@ -64,9 +59,9 @@ export default defineConfig({
         }
     },
     optimizeDeps: {
-        // Pre-bundle dependencies to avoid runtime eval()
-        include: ['react', 'react-dom'],
-        exclude: ['framer-motion', 'lucide-react'], // Exclude eval-dependent libraries
+        // No dependencies to pre-bundle for vanilla JS
+        include: [],
+        exclude: ['react', 'react-dom', 'framer-motion', 'lucide-react'], // Exclude all React dependencies
         esbuildOptions: {
             target: 'es2020',
             supported: {
