@@ -29,9 +29,8 @@
         }
     </style>
     
-    <!-- Static Assets - 100% CSP Compliant (No Build Tools) -->
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-    <script src="{{ asset('js/app.js') }}" defer></script>
+    <!-- Vite Assets - Using compiled assets instead of static files -->
+    @vite(['resources/css/app.css', 'resources/js/app-vanilla.js'])
 </head>
 <body class="antialiased">
     <div id="app">
