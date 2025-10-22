@@ -29,8 +29,9 @@
         }
     </style>
     
-    <!-- Vite Assets - Using compiled assets instead of static files -->
-    @vite(['resources/css/app.css', 'resources/js/app-vanilla.js'])
+    <!-- Emergency Solution: Direct asset URLs with HTTPS -->
+    <link rel="stylesheet" href="https://diariosesionesapp-diarioapp.txuo5.easypanel.host/css/app.css">
+    <script src="https://diariosesionesapp-diarioapp.txuo5.easypanel.host/js/app.js" defer></script>
 </head>
 <body class="antialiased">
     <div id="app">
