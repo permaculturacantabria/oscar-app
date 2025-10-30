@@ -36,7 +36,7 @@
             <input type="checkbox" name="remember"> Recuérdame
         </label>
 
-        <button type="submit" style="width:100%;padding:10px;">Entrar</button>
+        <button type="submit" class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded">Entrar</button>
     </form>
 
     <div style="margin-top:16px;display:flex;justify-content:space-between;">

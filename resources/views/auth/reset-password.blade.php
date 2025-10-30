@@ -33,7 +33,7 @@
         <label>Confirmar contraseña</label>
         <input name="password_confirmation" type="password" required style="width:100%;margin:6px 0 12px;">
 
-        <button type="submit" style="width:100%;padding:10px;">Actualizar contraseña</button>
+        <button type="submit" class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded">Actualizar contraseña</button>
     </form>
 
     <div style="margin-top:16px;text-align:center;">

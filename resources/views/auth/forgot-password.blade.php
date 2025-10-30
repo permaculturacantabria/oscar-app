@@ -29,7 +29,7 @@
         <label>Email</label>
         <input name="email" type="email" value="{{ old('email') }}" required style="width:100%;margin:6px 0 12px;">
 
-        <button type="submit" style="width:100%;padding:10px;">Enviar enlace de restablecimiento</button>
+        <button type="submit" class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded">Enviar enlace de restablecimiento</button>
     </form>
 
     <div style="margin-top:16px;text-align:center;">

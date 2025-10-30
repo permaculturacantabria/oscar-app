@@ -29,16 +29,13 @@ body {
 
 /* Custom Properties for Theme */
 :root {
-    --color-primary: #3b82f6;
-    --color-primary-dark: #2563eb;
-    --color-secondary: #6b7280;
-    --color-success: #10b981;
-    --color-warning: #f59e0b;
-    --color-error: #ef4444;
-    --color-background: #f8fafc;
-    --color-surface: #ffffff;
-    --color-text: #1f2937;
-    --color-text-secondary: #6b7280;
+    --color-primary: #ff931e; /* naranja: solo botones/detalles */
+    --color-primary-dark: #e57f0e;
+    --color-secondary: #808080; /* gris */
+    --color-background: #f7f5f0; /* blanco perla */
+    --color-surface: #ffffff; /* superficies/paneles */
+    --color-text: #1a1a1a; /* casi negro */
+    --color-text-secondary: #808080; /* gris secundario */
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
@@ -48,8 +45,8 @@ body {
 
 /* Dark mode variables */
 .dark {
-    --color-background: #0f172a;
-    --color-surface: #1e293b;
-    --color-text: #f1f5f9;
-    --color-text-secondary: #94a3b8;
+    --color-background: #111111;
+    --color-surface: #1f1f1f;
+    --color-text: #f1f1f1;
+    --color-text-secondary: #b0b0b0;
 }

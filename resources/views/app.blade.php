@@ -16,7 +16,7 @@
             font-family: 'Inter', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f8fafc;
+            background-color: #f7f5f0;
         }
         #app {
             min-height: 100vh;
