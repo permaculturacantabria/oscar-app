@@ -12,6 +12,9 @@ class Listener extends Model
     protected $fillable = [
         'user_id',
         'name',
+        'last_name',
+        'email',
+        'phone',
     ];
 }
 

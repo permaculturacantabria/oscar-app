@@ -153,6 +153,27 @@ function renderContent() {
     
     const sectionContent = getSectionContent(AppState.activeSection);
 
+    // Vista especial: Mis escuchas
+    if (AppState.activeSection === 'listeners') {
+        content.innerHTML = '' +
+            '<main class="flex-1 p-6">' +
+            '  <div class="mb-8 flex items-center justify-between">' +
+            '    <div>' +
+            '      <h2 class="text-3xl font-bold text-gray-900 mb-2">Mis escuchas</h2>' +
+            '      <p class="text-gray-600 text-lg">Añade y gestiona tus escuchas</p>' +
+            '    </div>' +
+            '    <button onclick="newListener()" class="btn btn-primary">Añadir escucha</button>' +
+            '  </div>' +
+            '  <div id="listenerList" class="grid grid-cols-1 gap-6"></div>' +
+            '</main>';
+
+        fetch('/api/listeners', { credentials: 'same-origin', headers: { 'Accept': 'application/json' } })
+          .then(function(r){ if(!r.ok) throw new Error('load'); return r.json(); })
+          .then(function(items){ renderListenerList(items); })
+          .catch(function(){ renderListenerList([]); });
+        return;
+    }
+
     // Si estamos en una categoría de catálogos, render especial con listado y botón añadir
     const catalogTypes = ['themes','early-memories','distressing-messages','directions','contradictions','listener-contradictions','reality-bits','restimulations','social-commitments','next-steps','physical-session','frozen-needs'];
     if (catalogTypes.indexOf(AppState.activeSection) !== -1) {
@@ -215,10 +236,72 @@ function renderCatalogList(items) {
     }).join('');
 }
 
+function renderListenerList(items) {
+    const list = document.getElementById('listenerList');
+    if (!list) return;
+    if (!items || !items.length) {
+        list.innerHTML = '<div class="empty-state">No hay escuchas todavía.</div>';
+        return;
+    }
+    list.innerHTML = items.map(function(it){
+        var fullName = escapeHtml([it.name, it.last_name || ''].join(' ').trim());
+        return '<div class="card">' +
+               '  <div class="flex items-center justify-between">' +
+               '    <div>' +
+               '      <div class="text-lg font-semibold text-gray-900">' + fullName + '</div>' +
+               '      <div class="text-sm text-gray-600">' + (it.email ? escapeHtml(it.email) : '') + (it.phone ? ' · ' + escapeHtml(it.phone) : '') + '</div>' +
+               '    </div>' +
+               '  </div>' +
+               '</div>';
+    }).join('');
+}
+
 function escapeHtml(s) {
-    if (!s) return '';
-    return String(s).replace(/[&<>"] /g, function(c){
-        return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',' ':' '})[c] || c;
+    if (s === null || s === undefined) return '';
+    var div = document.createElement('div');
+    div.textContent = String(s);
+    return div.innerHTML;
+}
+
+function newListener() {
+    var overlay = document.createElement('div'); overlay.className='modal-overlay';
+    var modal = document.createElement('div'); modal.className='modal';
+    modal.innerHTML = ''+
+    '<div class="modal-header">'+
+    '  <h2 class="text-lg font-semibold text-gray-900">Añadir escucha</h2>'+
+    '  <button id="closeListenerModal" class="text-gray-500 hover:text-gray-900">✕</button>'+
+    '</div>'+
+    '<div class="modal-body">'+
+    '  <div id="listenerError" class="text-red-600 text-sm mb-2" style="display:none;"></div>'+
+    '  <form id="listenerForm" class="space-y-4">'+
+    '    <div><label class="label">Nombre</label><input id="lnName" type="text" class="input" required></div>'+
+    '    <div><label class="label">Apellido</label><input id="lnLast" type="text" class="input"></div>'+
+    '    <div><label class="label">Email</label><input id="lnEmail" type="email" class="input"></div>'+
+    '    <div><label class="label">Teléfono</label><input id="lnPhone" type="text" class="input"></div>'+
+    '    <div class="flex justify-end gap-2 pt-2">'+
+    '      <button type="button" id="cancelListenerBtn" class="btn btn-secondary">Cancelar</button>'+
+    '      <button type="submit" class="btn btn-primary" id="saveListenerBtn">Guardar</button>'+
+    '    </div>'+
+    '  </form>'+
+    '</div>';
+    overlay.appendChild(modal); document.body.appendChild(overlay);
+
+    function close(){ if (overlay.parentNode) overlay.parentNode.removeChild(overlay); }
+    document.getElementById('closeListenerModal').addEventListener('click', close);
+    document.getElementById('cancelListenerBtn').addEventListener('click', close);
+    document.getElementById('listenerForm').addEventListener('submit', function(e){
+        e.preventDefault(); var err = document.getElementById('listenerError'); err.style.display='none';
+        var btn = document.getElementById('saveListenerBtn'); var old = btn.textContent; btn.disabled=true; btn.innerHTML='<span class="spinner"></span>';
+        var payload = { name: document.getElementById('lnName').value, last_name: document.getElementById('lnLast').value || null, email: document.getElementById('lnEmail').value || null, phone: document.getElementById('lnPhone').value || null };
+        var csrf = getCsrfToken();
+        fetch('/api/listeners', { method:'POST', credentials:'same-origin', headers:{ 'Content-Type':'application/json', 'Accept':'application/json', 'X-CSRF-TOKEN': csrf }, body: JSON.stringify(payload) })
+          .then(function(r){ if(!r.ok) return r.text().then(function(t){ throw new Error(t||'save');}); return r.json(); })
+          .then(function(){ close(); showToast('Escucha guardado');
+            return fetch('/api/listeners', { credentials:'same-origin', headers:{ 'Accept':'application/json' }})
+              .then(function(r){ return r.json(); }).then(function(items){ renderListenerList(items); });
+          })
+          .catch(function(e){ err.textContent='No se pudo guardar. ' + (e && e.message ? e.message : ''); err.style.display='block'; })
+          .finally(function(){ btn.disabled=false; btn.textContent=old; });
     });
 }
 

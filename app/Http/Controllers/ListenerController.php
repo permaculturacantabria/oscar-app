@@ -12,7 +12,7 @@ class ListenerController extends Controller
     {
         $listeners = Listener::where('user_id', Auth::id())
             ->orderBy('name')
-            ->get(['id', 'name']);
+            ->get(['id', 'name', 'last_name', 'email', 'phone']);
         return response()->json($listeners);
     }
 
@@ -20,11 +20,17 @@ class ListenerController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
+            'last_name' => ['nullable', 'string', 'max:255'],
+            'email' => ['nullable', 'email', 'max:255'],
+            'phone' => ['nullable', 'string', 'max:50'],
         ]);
 
-        $listener = Listener::firstOrCreate([
+        $listener = Listener::create([
             'user_id' => Auth::id(),
             'name' => $validated['name'],
+            'last_name' => $validated['last_name'] ?? null,
+            'email' => $validated['email'] ?? null,
+            'phone' => $validated['phone'] ?? null,
         ]);
 
         return response()->json($listener, 201);
