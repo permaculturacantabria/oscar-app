@@ -7,7 +7,8 @@ console.log('🚀 Iniciando aplicación JavaScript estática...');
 const AppState = {
     sidebarCollapsed: false,
     activeSection: 'dashboard',
-    darkMode: false
+    darkMode: false,
+    currentUser: null
 };
 
 // Iconos SVG como strings
@@ -131,8 +132,9 @@ function renderTopbar() {
     if (!topbar) return;
     
     const content = getSectionContent(AppState.activeSection);
-    
-    topbar.innerHTML = '<header class="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between"><div class="flex items-center space-x-4"><button onclick="toggleSidebar()" class="p-2 rounded-lg hover:bg-gray-100 transition-colors"><div class="w-5 h-5 flex flex-col justify-center space-y-1"><div class="w-full h-0.5 bg-gray-600"></div><div class="w-full h-0.5 bg-gray-600"></div><div class="w-full h-0.5 bg-gray-600"></div></div></button><h1 class="text-2xl font-bold text-gray-900">' + content.title + '</h1></div><div class="text-sm text-gray-500">' + new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) + '</div></header>';
+    const userHtml = AppState.currentUser ? ('<div class="text-right"><div class="text-sm text-gray-900">' + escapeHtml(AppState.currentUser.name || '') + '</div><div class="text-xs text-gray-500">' + escapeHtml(AppState.currentUser.email || '') + '</div></div>') : '<div class="text-sm text-gray-500">' + new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) + '</div>';
+
+    topbar.innerHTML = '<header class="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between"><div class="flex items-center space-x-4"><button onclick="toggleSidebar()" class="p-2 rounded-lg hover:bg-gray-100 transition-colors"><div class="w-5 h-5 flex flex-col justify-center space-y-1"><div class="w-full h-0.5 bg-gray-600"></div><div class="w-full h-0.5 bg-gray-600"></div><div class="w-full h-0.5 bg-gray-600"></div></div></button><h1 class="text-2xl font-bold text-gray-900">' + content.title + '</h1></div>' + userHtml + '</header>';
 }
 
 function renderContent() {
@@ -157,7 +159,7 @@ function renderContent() {
             '  <div id="catalogList" class="grid grid-cols-1 gap-6"></div>' +
             '</main>';
 
-        fetch('/api/catalog-items?type=' + encodeURIComponent(AppState.activeSection), { credentials: 'same-origin' })
+    fetch('/api/catalog-items?type=' + encodeURIComponent(AppState.activeSection), { credentials: 'same-origin', headers: { 'Accept': 'application/json' } })
             .then(function(r){ if(!r.ok) throw new Error('load'); return r.json(); })
             .then(function(items){ renderCatalogList(items); })
             .catch(function(){ renderCatalogList([]); });
@@ -395,7 +397,7 @@ function newSession() {
     });
 
     // Cargar listeners
-    fetch('/api/listeners', { credentials: 'same-origin' })
+    fetch('/api/listeners', { credentials: 'same-origin', headers: { 'Accept': 'application/json' } })
         .then(function(r){ if(!r.ok) throw new Error('fail'); return r.json(); })
         .then(function(list){
             var select = document.getElementById('listenerId');
@@ -438,21 +440,23 @@ function newSession() {
             credentials: 'same-origin',
             headers: {
                 'Content-Type': 'application/json',
+                'Accept': 'application/json',
                 'X-CSRF-TOKEN': csrf
             },
             body: JSON.stringify(payload)
         }).then(function(r){
             var ct = r.headers.get('content-type') || '';
-            if (!r.ok) throw new Error('save-error');
-            if (ct.indexOf('application/json') === -1) throw new Error('not-json');
+            if (!r.ok) return r.text().then(function(t){ throw new Error(t || 'save-error'); });
+            if (ct.indexOf('application/json') === -1) return r.text().then(function(t){ throw new Error('not-json:' + (t||'')); });
             return r.json();
         }).then(function(){
             closeModal();
         }).catch(function(err){
-            if (err && err.message === 'not-json') {
+            var msg = (err && err.message) ? err.message : '';
+            if (msg.indexOf('not-json') === 0) {
                 errorBox.textContent = 'Sesión no guardada. ¿Has iniciado sesión?';
             } else {
-                errorBox.textContent = 'No se pudo guardar la sesión.';
+                errorBox.textContent = 'No se pudo guardar la sesión. ' + msg;
             }
             errorBox.style.display = 'block';
         });
@@ -474,7 +478,11 @@ function logout() {
 // Inicialización
 document.addEventListener('DOMContentLoaded', function() {
     console.log('✅ DOM cargado, iniciando aplicación...');
-    renderApp();
+    // Cargar usuario actual (si autenticado)
+    fetch('/api/me', { credentials: 'same-origin', headers: { 'Accept': 'application/json' } })
+      .then(function(r){ if(!r.ok) return null; return r.json(); })
+      .then(function(user){ AppState.currentUser = user; renderApp(); })
+      .catch(function(){ renderApp(); });
     console.log('✅ Aplicación JavaScript estática iniciada correctamente');
 });
 

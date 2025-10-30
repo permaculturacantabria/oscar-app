@@ -48,4 +48,10 @@ Route::middleware('auth')->group(function () {
     // Catalog items
     Route::get('/api/catalog-items', [CatalogItemController::class, 'index']);
     Route::post('/api/catalog-items', [CatalogItemController::class, 'store']);
+
+    // Current user info (session-based)
+    Route::get('/api/me', function() {
+        $user = auth()->user();
+        return response()->json($user ? $user->only(['id','name','email','terms_accepted_at']) : null);
+    });
 });
