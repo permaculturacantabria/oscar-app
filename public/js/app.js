@@ -281,7 +281,8 @@ function newSession() {
 
     function combineDateTime(dateStr, timeStr) {
         if (!dateStr || !timeStr) return '';
-        return new Date(dateStr + 'T' + timeStr + ':00').toISOString();
+        // dateStr from <input type="date"> is YYYY-MM-DD, timeStr is HH:mm
+        return dateStr + ' ' + timeStr + ':00';
     }
 
     // Submit
@@ -312,12 +313,18 @@ function newSession() {
             },
             body: JSON.stringify(payload)
         }).then(function(r){
+            var ct = r.headers.get('content-type') || '';
             if (!r.ok) throw new Error('save-error');
+            if (ct.indexOf('application/json') === -1) throw new Error('not-json');
             return r.json();
         }).then(function(){
             closeModal();
-        }).catch(function(){
-            errorBox.textContent = 'No se pudo guardar la sesión.';
+        }).catch(function(err){
+            if (err && err.message === 'not-json') {
+                errorBox.textContent = 'Sesión no guardada. ¿Has iniciado sesión?';
+            } else {
+                errorBox.textContent = 'No se pudo guardar la sesión.';
+            }
             errorBox.style.display = 'block';
         });
     });

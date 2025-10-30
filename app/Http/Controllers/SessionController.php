@@ -6,6 +6,7 @@ use App\Models\Listener;
 use App\Models\Session;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Carbon;
 
 class SessionController extends Controller
 {
@@ -34,7 +35,7 @@ class SessionController extends Controller
             'user_id' => $user->id,
             'listener_id' => $validated['listener_id'] ?? null,
             'listener_name' => $validated['listener_name'] ?? null,
-            'scheduled_at' => $validated['scheduled_at'],
+            'scheduled_at' => Carbon::parse($validated['scheduled_at']),
             'status' => $validated['status'],
             'notes' => $validated['notes'] ?? null,
             'categories' => $validated['categories'] ?? null,
