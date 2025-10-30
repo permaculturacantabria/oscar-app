@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\PrivacyController;
 use App\Http\Controllers\ListenerController;
 use App\Http\Controllers\SessionController;
+use App\Http\Controllers\CatalogItemController;
 
 Route::get('/', function () {
     return view('app');
@@ -42,4 +43,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/api/listeners', [ListenerController::class, 'index']);
     Route::post('/api/listeners', [ListenerController::class, 'store']);
     Route::post('/api/sessions', [SessionController::class, 'store']);
+
+    // Catalog items
+    Route::get('/api/catalog-items', [CatalogItemController::class, 'index']);
+    Route::post('/api/catalog-items', [CatalogItemController::class, 'store']);
 });

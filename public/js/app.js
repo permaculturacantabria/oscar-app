@@ -75,6 +75,11 @@ function getSectionContent(section) {
                 { label: 'Total sesiones', value: '47', color: '#3b82f6' },
                 { label: 'Esta semana', value: '3', color: '#10b981' }
             ]
+        },
+        'listeners': {
+            title: 'Mis escuchas',
+            description: 'Gestiona tus escuchas guardadas',
+            stats: []
         }
     };
     
@@ -135,8 +140,132 @@ function renderContent() {
     if (!content) return;
     
     const sectionContent = getSectionContent(AppState.activeSection);
-    
+
+    // Si estamos en una categoría de catálogos, render especial con listado y botón añadir
+    const catalogTypes = ['themes','early-memories','distressing-messages','directions','contradictions','listener-contradictions','reality-bits','restimulations','social-commitments','next-steps','physical-session','frozen-needs'];
+    if (catalogTypes.indexOf(AppState.activeSection) !== -1) {
+        const labels = getCatalogLabels(AppState.activeSection);
+        content.innerHTML = '' +
+            '<main class="flex-1 p-6">' +
+            '  <div class="mb-8 flex items-center justify-between">' +
+            '    <div>' +
+            '      <h2 class="text-3xl font-bold text-gray-900 mb-2">' + labels.title + '</h2>' +
+            '      <p class="text-gray-600 text-lg">' + labels.subtitle + '</p>' +
+            '    </div>' +
+            '    <button onclick="newCatalogItem(\'' + AppState.activeSection + '\')" class="bg-blue-600 hover:bg-blue-700 text-white rounded-lg py-2 px-4">Añadir</button>' +
+            '  </div>' +
+            '  <div id="catalogList" class="grid grid-cols-1 gap-6"></div>' +
+            '</main>';
+
+        fetch('/api/catalog-items?type=' + encodeURIComponent(AppState.activeSection), { credentials: 'same-origin' })
+            .then(function(r){ if(!r.ok) throw new Error('load'); return r.json(); })
+            .then(function(items){ renderCatalogList(items); })
+            .catch(function(){ renderCatalogList([]); });
+
+        return;
+    }
+
+    // Default contenido
     content.innerHTML = '<main class="flex-1 p-6"><div class="mb-8"><h2 class="text-3xl font-bold text-gray-900 mb-2">' + sectionContent.title + '</h2><p class="text-gray-600 text-lg">' + sectionContent.description + '</p></div>' + (sectionContent.stats.length > 0 ? '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">' + sectionContent.stats.map(function(stat) { return '<div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow"><div class="flex items-center justify-between"><div><p class="text-sm text-gray-600 mb-1">' + stat.label + '</p><p class="text-2xl font-bold text-gray-900">' + stat.value + '</p></div><div class="w-12 h-12 rounded-lg flex items-center justify-center" style="background-color: ' + stat.color + '">' + Icons.dashboard + '</div></div></div>'; }).join('') + '</div>' : '') + '<div class="bg-white p-8 rounded-xl shadow-sm border border-gray-200 text-center"><div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">' + Icons.fileText + '</div><h3 class="text-xl font-semibold text-gray-900 mb-2">Contenido en desarrollo</h3><p class="text-gray-600 max-w-md mx-auto">Esta sección estará disponible próximamente. Aquí encontrarás todas las funcionalidades específicas para ' + sectionContent.title.toLowerCase() + '.</p></div></main>';
+}
+
+function getCatalogLabels(type) {
+    const map = {
+        'themes': { title: 'Temas', name: 'Nombre de tema', description: 'Descripción de tema', notes: 'Notas de tema', subtitle: 'Gestiona tus temas' },
+        'early-memories': { title: 'Memorias tempranas', name: 'Nombre de memoria temprana', description: 'Descripción de memoria temprana', notes: 'Notas de memoria temprana', subtitle: 'Gestiona tus memorias tempranas' },
+        'distressing-messages': { title: 'Mensajes angustiosos', name: 'Nombre de mensajes angustiosos', description: 'Descripción de mensajes angustiosos', notes: 'Notas de mensajes angustiosos', subtitle: 'Gestiona tus mensajes angustiosos' },
+        'directions': { title: 'Direcciones', name: 'Nombre de dirección', description: 'Descripción de dirección', notes: 'Notas de dirección', subtitle: 'Gestiona tus direcciones' },
+        'contradictions': { title: 'Contradicciones', name: 'Nombre de contradicción', description: 'Descripción de contradicción', notes: 'Notas de contradicción', subtitle: 'Gestiona tus contradicciones' },
+        'listener-contradictions': { title: 'Contradicciones del escucha', name: 'Nombre de contradicción del escucha', description: 'Descripción de contradicción del escucha', notes: 'Notas de contradicción del escucha', subtitle: 'Gestiona contradicciones del escucha' },
+        'reality-bits': { title: 'Pedacitos de realidad', name: 'Nombre de pedacito de realidad', description: 'Descripción de pedacito de realidad', notes: 'Notas de pedacito de realidad', subtitle: 'Gestiona pedacitos de realidad' },
+        'restimulations': { title: 'Restimulaciones', name: 'Nombre de restimulación', description: 'Descripción de restimulación', notes: 'Notas de restimulación', subtitle: 'Gestiona restimulaciones' },
+        'social-commitments': { title: 'Compromisos sociales', name: 'Nombre de compromiso social', description: 'Descripción de compromiso social', notes: 'Notas de compromiso social', subtitle: 'Gestiona compromisos sociales' },
+        'next-steps': { title: 'Próximos pasos', name: 'Nombre de próximo paso', description: 'Descripción de próximo paso', notes: 'Notas de próximo paso', subtitle: 'Gestiona próximos pasos' },
+        'physical-session': { title: 'Sesión física', name: 'Nombre de sesión física', description: 'Descripción de sesión física', notes: 'Notas de sesión física', subtitle: 'Gestiona sesiones físicas' },
+        'frozen-needs': { title: 'Necesidades congeladas', name: 'Nombre de necesidad congelada', description: 'Descripción de necesidad congelada', notes: 'Notas de necesidad congelada', subtitle: 'Gestiona necesidades congeladas' }
+    };
+    return map[type] || { title: 'Catálogo', name: 'Nombre', description: 'Descripción', notes: 'Notas', subtitle: '' };
+}
+
+function renderCatalogList(items) {
+    const list = document.getElementById('catalogList');
+    if (!list) return;
+    if (!items || !items.length) {
+        list.innerHTML = '<div class="text-gray-600">No hay registros todavía.</div>';
+        return;
+    }
+    list.innerHTML = items.map(function(it){
+        return '<div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">' +
+               '  <h4 class="text-lg font-semibold text-gray-900 mb-1">' + escapeHtml(it.name) + '</h4>' +
+               '  <p class="text-gray-600 mb-2">' + (it.description ? escapeHtml(it.description) : '') + '</p>' +
+               '  <div class="text-sm text-gray-500">' + (it.notes ? escapeHtml(it.notes) : '') + '</div>' +
+               '</div>';
+    }).join('');
+}
+
+function escapeHtml(s) {
+    if (!s) return '';
+    return String(s).replace(/[&<>"] /g, function(c){
+        return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',' ':' '})[c] || c;
+    });
+}
+
+function newCatalogItem(type) {
+    const labels = getCatalogLabels(type);
+    var overlay = document.createElement('div');
+    overlay.style.position='fixed';overlay.style.inset='0';overlay.style.background='rgba(0,0,0,0.5)';overlay.style.display='flex';overlay.style.alignItems='center';overlay.style.justifyContent='center';overlay.style.zIndex='9999';
+    var modal = document.createElement('div');
+    modal.style.width='100%';modal.style.maxWidth='640px';modal.className='bg-white rounded-lg shadow-md';
+    modal.innerHTML = ''+
+    '<div class="border-b border-gray-200 px-4 py-3 flex items-center justify-between">'+
+    '  <h2 class="text-lg font-semibold text-gray-900">Añadir a ' + labels.title + '</h2>'+
+    '  <button id="closeCatalogModal" class="text-gray-500 hover:text-gray-900">✕</button>'+
+    '</div>'+
+    '<div class="p-4">'+
+    '  <div id="catalogError" class="text-red-600 text-sm mb-2" style="display:none;"></div>'+
+    '  <form id="catalogForm" class="space-y-4">'+
+    '    <div><label class="block text-sm mb-1">' + labels.name + '</label><input id="catName" type="text" class="w-full bg-gray-100 rounded px-3 py-2" required></div>'+
+    '    <div><label class="block text-sm mb-1">' + labels.description + '</label><textarea id="catDesc" rows="3" class="w-full bg-gray-100 rounded px-3 py-2"></textarea></div>'+
+    '    <div><label class="block text-sm mb-1">' + labels.notes + '</label><textarea id="catNotes" rows="3" class="w-full bg-gray-100 rounded px-3 py-2"></textarea></div>'+
+    '    <div class="flex justify-end gap-2 pt-2">'+
+    '      <button type="button" id="cancelCatalogBtn" class="px-4 py-2 rounded border border-gray-200">Cancelar</button>'+
+    '      <button type="submit" class="px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white">Guardar</button>'+
+    '    </div>'+
+    '  </form>'+
+    '</div>';
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+
+    function close() { if (overlay.parentNode) overlay.parentNode.removeChild(overlay); }
+    document.getElementById('closeCatalogModal').addEventListener('click', close);
+    document.getElementById('cancelCatalogBtn').addEventListener('click', close);
+    document.getElementById('catalogForm').addEventListener('submit', function(e){
+        e.preventDefault();
+        var error = document.getElementById('catalogError');
+        error.style.display='none';
+        var payload = {
+            type: type,
+            name: document.getElementById('catName').value,
+            description: document.getElementById('catDesc').value || null,
+            notes: document.getElementById('catNotes').value || null
+        };
+        var csrf = getCsrfToken();
+        fetch('/api/catalog-items', {
+            method: 'POST', credentials: 'same-origin',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf },
+            body: JSON.stringify(payload)
+        }).then(function(r){ if(!r.ok) throw new Error('save'); return r.json(); })
+        .then(function(){
+            close();
+            // reload list
+            fetch('/api/catalog-items?type=' + encodeURIComponent(type), { credentials: 'same-origin' })
+              .then(function(r){ return r.json(); })
+              .then(function(items){ renderCatalogList(items); });
+        }).catch(function(){
+            error.textContent = 'No se pudo guardar.';
+            error.style.display='block';
+        });
+    });
 }
 
 // Event handlers

@@ -6,7 +6,7 @@ const Topbar = ({ activeSection, toggleSidebar, sidebarCollapsed }) => {
         const titles = {
             dashboard: 'Dashboard',
             sessions: 'Mis Sesiones',
-            listeners: 'Mis Escuchas',
+            listeners: 'Mis escuchas',
             catalogs: 'Catálogos',
             themes: 'Temas',
             'early-memories': 'Memorias Tempranas',
