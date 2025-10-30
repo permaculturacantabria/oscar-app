@@ -114,8 +114,11 @@ function renderSidebar() {
     if (!sidebar) return;
     
     const sidebarClass = AppState.sidebarCollapsed ? 'w-20' : 'w-70';
+    const isLoggedIn = !!AppState.currentUser;
+    const logoutButtonText = isLoggedIn ? 'Salir' : 'Log in';
+    const logoutButtonAction = isLoggedIn ? 'logout()' : 'goToLogin()';
     
-    sidebar.innerHTML = '<div class="bg-gray-900 text-white flex flex-col border-r border-gray-800 transition-all duration-300 ' + sidebarClass + '"><div class="p-4 border-b border-gray-800"><div class="flex items-center space-x-3"><div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">' + Icons.fileText + '</div>' + (!AppState.sidebarCollapsed ? '<div><h1 class="text-lg font-semibold text-white">Emociona</h1><p class="text-xs text-gray-400">Diario de Sesiones</p></div>' : '') + '</div></div>' + (!AppState.sidebarCollapsed ? '<div class="p-4"><div class="relative"><div class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">' + Icons.search + '</div><input type="text" placeholder="Buscar..." class="w-full bg-gray-800 text-white placeholder-gray-400 rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"/></div></div>' : '') + '<nav class="flex-1 px-4 py-2 space-y-1" id="navigation-menu">' + renderMenuItems() + '</nav><div class="p-4 border-t border-gray-800 space-y-2"><button onclick="newSession()" class="w-full flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg py-2 px-3 transition-colors">' + Icons.plus + (!AppState.sidebarCollapsed ? '<span class="text-sm font-medium">Nueva sesión</span>' : '') + '</button><button onclick="toggleDarkMode()" class="w-full flex items-center justify-center space-x-2 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg py-2 px-3 transition-colors">' + (AppState.darkMode ? Icons.sun : Icons.moon) + (!AppState.sidebarCollapsed ? '<span class="text-sm">' + (AppState.darkMode ? 'Modo claro' : 'Modo oscuro') + '</span>' : '') + '</button><button onclick="logout()" class="w-full flex items-center justify-center space-x-2 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg py-2 px-3 transition-colors">' + Icons.logOut + (!AppState.sidebarCollapsed ? '<span class="text-sm">Salir</span>' : '') + '</button></div></div>';
+    sidebar.innerHTML = '<div class="bg-gray-900 text-white flex flex-col border-r border-gray-800 transition-all duration-300 ' + sidebarClass + '"><div class="p-4 border-b border-gray-800"><div class="flex items-center space-x-3"><div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">' + Icons.fileText + '</div>' + (!AppState.sidebarCollapsed ? '<div><h1 class="text-lg font-semibold text-white">Emociona</h1><p class="text-xs text-gray-400">Diario de Sesiones</p></div>' : '') + '</div></div>' + (!AppState.sidebarCollapsed ? '<div class="p-4"><div class="relative"><div class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">' + Icons.search + '</div><input type="text" placeholder="Buscar..." class="w-full bg-gray-800 text-white placeholder-gray-400 rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"/></div></div>' : '') + '<nav class="flex-1 px-4 py-2 space-y-1" id="navigation-menu">' + renderMenuItems() + '</nav><div class="p-4 border-t border-gray-800 space-y-2">' + (isLoggedIn ? '<button onclick="newSession()" class="w-full flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg py-2 px-3 transition-colors">' + Icons.plus + (!AppState.sidebarCollapsed ? '<span class="text-sm font-medium">Nueva sesión</span>' : '') + '</button>' : '') + '<button onclick="toggleDarkMode()" class="w-full flex items-center justify-center space-x-2 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg py-2 px-3 transition-colors">' + (AppState.darkMode ? Icons.sun : Icons.moon) + (!AppState.sidebarCollapsed ? '<span class="text-sm">' + (AppState.darkMode ? 'Modo claro' : 'Modo oscuro') + '</span>' : '') + '</button><button onclick="' + logoutButtonAction + '" class="w-full flex items-center justify-center space-x-2 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg py-2 px-3 transition-colors">' + Icons.logOut + (!AppState.sidebarCollapsed ? '<span class="text-sm">' + logoutButtonText + '</span>' : '') + '</button></div></div>';
 }
 
 function renderMenuItems() {
@@ -167,7 +170,10 @@ function renderContent() {
             '  <div id="sessionList" class="grid grid-cols-1 gap-6"></div>' +
             '</main>';
 
-        // TODO: Cargar y mostrar listado de sesiones cuando implementemos el endpoint
+        fetch('/api/sessions', { credentials: 'same-origin', headers: { 'Accept': 'application/json' } })
+          .then(function(r){ if(!r.ok) throw new Error('load'); return r.json(); })
+          .then(function(items){ renderSessionList(items); })
+          .catch(function(){ renderSessionList([]); });
         return;
     }
 
@@ -248,15 +254,15 @@ function renderCatalogList(items, type) {
     list.innerHTML = items.map(function(it){
         var lastUpdate = it.updated_at ? formatDate(it.updated_at) : '';
         var isNew = it.created_at && it.updated_at && new Date(it.created_at).getTime() === new Date(it.updated_at).getTime();
-        return '<div class="card">' +
-               '  <div class="flex items-center justify-between">' +
-               '    <div class="flex-1">' +
-               '      <h4 class="text-lg font-semibold text-gray-900 mb-1">' + escapeHtml(it.name) + '</h4>' +
-               '      <p class="text-gray-600 mb-2">' + (it.description ? escapeHtml(it.description) : '') + '</p>' +
-               '      <div class="text-sm text-gray-500 mb-1">' + (it.notes ? escapeHtml(it.notes) : '') + '</div>' +
+        return '<div class="card" style="max-width:100%;">' +
+               '  <div class="flex items-center justify-between" style="gap:1rem;">' +
+               '    <div class="flex-1" style="min-width:0; overflow:hidden;">' +
+               '      <h4 class="text-lg font-semibold text-gray-900 mb-1" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">' + escapeHtml(it.name) + '</h4>' +
+               '      <p class="text-gray-600 mb-2 text-clamp-2">' + (it.description ? escapeHtml(it.description) : '') + '</p>' +
+               '      <div class="text-sm text-gray-500 mb-1 text-clamp-2">' + (it.notes ? escapeHtml(it.notes) : '') + '</div>' +
                '      <div class="text-xs text-gray-500">' + (isNew ? 'Creado' : 'Actualizado') + ': ' + lastUpdate + '</div>' +
                '    </div>' +
-               '    <button onclick="editCatalogItem(' + it.id + ', \'' + type + '\')" class="btn btn-secondary" style="margin-left:1rem;">Editar</button>' +
+               '    <button onclick="editCatalogItem(' + it.id + ', \'' + type + '\')" class="btn btn-secondary flex-shrink-0">Editar</button>' +
                '  </div>' +
                '</div>';
     }).join('');
@@ -273,14 +279,56 @@ function renderListenerList(items) {
         var fullName = escapeHtml([it.name, it.last_name || ''].join(' ').trim());
         var lastUpdate = it.updated_at ? formatDate(it.updated_at) : '';
         var isNew = it.created_at && it.updated_at && new Date(it.created_at).getTime() === new Date(it.updated_at).getTime();
-        return '<div class="card">' +
-               '  <div class="flex items-center justify-between">' +
-               '    <div class="flex-1">' +
-               '      <div class="text-lg font-semibold text-gray-900">' + fullName + '</div>' +
+        return '<div class="card" style="max-width:100%;">' +
+               '  <div class="flex items-center justify-between" style="gap:1rem;">' +
+               '    <div class="flex-1" style="min-width:0; overflow:hidden;">' +
+               '      <div class="text-lg font-semibold text-gray-900" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">' + fullName + '</div>' +
                '      <div class="text-sm text-gray-600 mb-1">' + (it.email ? escapeHtml(it.email) : '') + (it.phone ? ' · ' + escapeHtml(it.phone) : '') + '</div>' +
                '      <div class="text-xs text-gray-500">' + (isNew ? 'Creado' : 'Actualizado') + ': ' + lastUpdate + '</div>' +
                '    </div>' +
-               '    <button onclick="editListener(' + it.id + ')" class="btn btn-secondary" style="margin-left:1rem;">Editar</button>' +
+               '    <button onclick="editListener(' + it.id + ')" class="btn btn-secondary flex-shrink-0">Editar</button>' +
+               '  </div>' +
+               '</div>';
+    }).join('');
+}
+
+function renderSessionList(items) {
+    const list = document.getElementById('sessionList');
+    if (!list) return;
+    if (!items || !items.length) {
+        list.innerHTML = '<div class="empty-state">No hay sesiones todavía.</div>';
+        return;
+    }
+    list.innerHTML = items.map(function(it){
+        var listenerName = escapeHtml(it.listener_name || 'Sin escucha asignada');
+        var scheduledDate = it.scheduled_at ? formatDate(it.scheduled_at) : 'Sin fecha';
+        var statusLabel = it.status === 'realizada' ? 'Realizada' : 'Pendiente';
+        var statusClass = it.status === 'realizada' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800';
+        var lastUpdate = it.updated_at ? formatDate(it.updated_at) : '';
+        var isNew = it.created_at && it.updated_at && new Date(it.created_at).getTime() === new Date(it.updated_at).getTime();
+        var scheduledAtFormatted = '';
+        if (it.scheduled_at) {
+            try {
+                var d = new Date(it.scheduled_at);
+                if (!isNaN(d.getTime())) {
+                    scheduledAtFormatted = d.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }) + ' a las ' + d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+                }
+            } catch(e) {
+                scheduledAtFormatted = scheduledDate;
+            }
+        }
+        return '<div class="card" style="max-width:100%;">' +
+               '  <div class="flex items-center justify-between" style="gap:1rem;">' +
+               '    <div class="flex-1" style="min-width:0; overflow:hidden;">' +
+               '      <div class="flex items-center gap-2 mb-2">' +
+               '        <div class="text-lg font-semibold text-gray-900" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">' + listenerName + '</div>' +
+               '        <span class="px-2 py-1 rounded-full text-xs font-medium ' + statusClass + '">' + statusLabel + '</span>' +
+               '      </div>' +
+               '      <div class="text-sm text-gray-600 mb-1">' + scheduledAtFormatted + '</div>' +
+               '      <div class="text-sm text-gray-500 mb-1 text-clamp-2">' + (it.notes ? escapeHtml(it.notes) : '') + '</div>' +
+               '      <div class="text-xs text-gray-500">' + (isNew ? 'Creado' : 'Actualizado') + ': ' + lastUpdate + '</div>' +
+               '    </div>' +
+               '    <button onclick="editSession(' + it.id + ')" class="btn btn-secondary flex-shrink-0">Editar</button>' +
                '  </div>' +
                '</div>';
     }).join('');
@@ -500,7 +548,8 @@ function getCsrfToken() {
     return meta ? meta.getAttribute('content') : '';
 }
 
-function newSession() {
+function newSession(id) {
+    var isEdit = !!id;
     // Crear overlay
     var overlay = document.createElement('div');
     overlay.className = 'fixed inset-0';
@@ -521,7 +570,7 @@ function newSession() {
 
     modal.innerHTML = '' +
         '<div class="border-b border-gray-200 px-4 py-3 flex items-center justify-between">' +
-        '  <h2 class="text-lg font-semibold text-gray-900">Añadir sesión</h2>' +
+        '  <h2 class="text-lg font-semibold text-gray-900">' + (isEdit ? 'Editar sesión' : 'Añadir sesión') + '</h2>' +
         '  <button id="closeSessionModal" class="text-gray-500 hover:text-gray-900">✕</button>' +
         '</div>' +
         '<div class="p-4" id="sessionFormContainer">' +
@@ -558,7 +607,7 @@ function newSession() {
         '    </div>' +
         '    <div class="flex justify-end gap-2 pt-2">' +
         '      <button type="button" id="cancelSessionBtn" class="px-4 py-2 rounded border border-gray-200">Cancelar</button>' +
-        '      <button type="submit" id="saveSessionBtn" class="px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white">Guardar sesión</button>' +
+        '      <button type="submit" id="saveSessionBtn" class="px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white">' + (isEdit ? 'Actualizar sesión' : 'Guardar sesión') + '</button>' +
         '    </div>' +
         '  </form>' +
         '</div>';
@@ -592,6 +641,33 @@ function newSession() {
                 opt.textContent = l.name;
                 select.appendChild(opt);
             });
+            // Si es edición, cargar datos de la sesión
+            if (isEdit) {
+                fetch('/api/sessions/' + id, { credentials: 'same-origin', headers: { 'Accept': 'application/json' } })
+                  .then(function(r){ if(!r.ok) throw new Error('load'); return r.json(); })
+                  .then(function(data){
+                      // Llenar campos con datos de la sesión
+                      if (data.listener_id) {
+                          listenerIdEl.value = data.listener_id;
+                          listenerNameEl.disabled = true;
+                      } else if (data.listener_name) {
+                          listenerNameEl.value = data.listener_name;
+                          listenerIdEl.value = '';
+                      }
+                      if (data.scheduled_at) {
+                          var d = new Date(data.scheduled_at);
+                          if (!isNaN(d.getTime())) {
+                              var dateStr = d.toISOString().split('T')[0];
+                              var timeStr = d.toTimeString().split(' ')[0].substring(0, 5);
+                              document.getElementById('dateField').value = dateStr;
+                              document.getElementById('timeField').value = timeStr;
+                          }
+                      }
+                      document.getElementById('statusField').value = data.status || 'pendiente';
+                      document.getElementById('notesField').value = data.notes || '';
+                  })
+                  .catch(function(){ closeModal(); showToast('No se pudo cargar la sesión'); });
+            }
         })
         .catch(function(){ /* silencioso */ });
 
@@ -622,8 +698,10 @@ function newSession() {
         };
 
         var csrf = getCsrfToken();
-        fetch('/api/sessions', {
-            method: 'POST',
+        var url = isEdit ? '/api/sessions/' + id : '/api/sessions';
+        var method = isEdit ? 'PUT' : 'POST';
+        fetch(url, {
+            method: method,
             credentials: 'same-origin',
             headers: {
                 'Content-Type': 'application/json',
@@ -638,7 +716,14 @@ function newSession() {
             return r.json();
         }).then(function(){
             closeModal();
-            showToast('Sesión guardada');
+            showToast(isEdit ? 'Sesión actualizada' : 'Sesión guardada');
+            // Recargar lista de sesiones si estamos en la sección de sesiones
+            if (AppState.activeSection === 'sessions') {
+                fetch('/api/sessions', { credentials: 'same-origin', headers: { 'Accept': 'application/json' } })
+                  .then(function(r){ if(!r.ok) throw new Error('load'); return r.json(); })
+                  .then(function(items){ renderSessionList(items); })
+                  .catch(function(){ renderSessionList([]); });
+            }
         }).catch(function(err){
             var msg = (err && err.message) ? err.message : '';
             if (msg.indexOf('not-json') === 0) {
@@ -651,6 +736,10 @@ function newSession() {
     });
 }
 
+function editSession(id) {
+    newSession(id);
+}
+
 function logout() {
     if (!confirm('¿Estás seguro de que quieres salir?')) return;
     var csrf = getCsrfToken();
@@ -661,6 +750,10 @@ function logout() {
     }).then(function(){
         window.location.href = '/login';
     });
+}
+
+function goToLogin() {
+    window.location.href = '/login';
 }
 
 // Inicialización

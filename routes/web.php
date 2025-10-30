@@ -46,7 +46,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/api/listeners/{id}', [ListenerController::class, 'show']);
     Route::put('/api/listeners/{id}', [ListenerController::class, 'update']);
     
+    Route::get('/api/sessions', [SessionController::class, 'index']);
     Route::post('/api/sessions', [SessionController::class, 'store']);
+    Route::get('/api/sessions/{id}', [SessionController::class, 'show']);
+    Route::put('/api/sessions/{id}', [SessionController::class, 'update']);
 
     // Catalog items
     Route::get('/api/catalog-items', [CatalogItemController::class, 'index']);
