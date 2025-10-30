@@ -132,9 +132,19 @@ function renderTopbar() {
     if (!topbar) return;
     
     const content = getSectionContent(AppState.activeSection);
-    const userHtml = AppState.currentUser ? ('<div class="text-right"><div class="text-sm text-gray-900">' + escapeHtml(AppState.currentUser.name || '') + '</div><div class="text-xs text-gray-500">' + escapeHtml(AppState.currentUser.email || '') + '</div></div>') : '<div class="text-sm text-gray-500">' + new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) + '</div>';
+    var right;
+    if (AppState.currentUser) {
+        var name = escapeHtml(AppState.currentUser.name || '');
+        var email = escapeHtml(AppState.currentUser.email || '');
+        right = '<div class="flex items-center gap-3">'
+              + '<div class="avatar">' + getInitials(name || email) + '</div>'
+              + '<div class="text-right"><div class="text-sm text-gray-900">' + name + '</div><div class="text-xs text-gray-500">' + email + '</div></div>'
+              + '</div>';
+    } else {
+        right = '<div class="text-sm text-gray-500">' + new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) + '</div>';
+    }
 
-    topbar.innerHTML = '<header class="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between"><div class="flex items-center space-x-4"><button onclick="toggleSidebar()" class="p-2 rounded-lg hover:bg-gray-100 transition-colors"><div class="w-5 h-5 flex flex-col justify-center space-y-1"><div class="w-full h-0.5 bg-gray-600"></div><div class="w-full h-0.5 bg-gray-600"></div><div class="w-full h-0.5 bg-gray-600"></div></div></button><h1 class="text-2xl font-bold text-gray-900">' + content.title + '</h1></div>' + userHtml + '</header>';
+    topbar.innerHTML = '<header class="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between"><div class="flex items-center space-x-4"><button onclick="toggleSidebar()" class="p-2 rounded-lg hover:bg-gray-100 transition-colors"><div class="w-5 h-5 flex flex-col justify-center space-y-1"><div class="w-full h-0.5 bg-gray-600"></div><div class="w-full h-0.5 bg-gray-600"></div><div class="w-full h-0.5 bg-gray-600"></div></div></button><h1 class="text-2xl font-bold text-gray-900">' + content.title + '</h1></div>' + right + '</header>';
 }
 
 function renderContent() {
@@ -215,15 +225,15 @@ function escapeHtml(s) {
 function newCatalogItem(type) {
     const labels = getCatalogLabels(type);
     var overlay = document.createElement('div');
-    overlay.style.position='fixed';overlay.style.inset='0';overlay.style.background='rgba(0,0,0,0.5)';overlay.style.display='flex';overlay.style.alignItems='center';overlay.style.justifyContent='center';overlay.style.zIndex='9999';
+    overlay.className='modal-overlay';
     var modal = document.createElement('div');
-    modal.style.width='100%';modal.style.maxWidth='640px';modal.className='bg-white rounded-lg shadow-md';
+    modal.className='modal';
     modal.innerHTML = ''+
-    '<div class="border-b border-gray-200 px-4 py-3 flex items-center justify-between">'+
+    '<div class="modal-header">'+
     '  <h2 class="text-lg font-semibold text-gray-900">Añadir a ' + labels.title + '</h2>'+
     '  <button id="closeCatalogModal" class="text-gray-500 hover:text-gray-900">✕</button>'+
     '</div>'+
-    '<div class="p-4">'+
+    '<div class="modal-body">'+
     '  <div id="catalogError" class="text-red-600 text-sm mb-2" style="display:none;"></div>'+
     '  <form id="catalogForm" class="space-y-4">'+
     '    <div><label class="block text-sm mb-1">' + labels.name + '</label><input id="catName" type="text" class="w-full bg-gray-100 rounded px-3 py-2" required></div>'+
@@ -245,6 +255,8 @@ function newCatalogItem(type) {
         e.preventDefault();
         var error = document.getElementById('catalogError');
         error.style.display='none';
+        var submitBtn = e.target.querySelector('button[type="submit"]');
+        var oldText = submitBtn.textContent; submitBtn.disabled = true; submitBtn.innerHTML = '<span class="spinner"></span>';
         var payload = {
             type: type,
             name: document.getElementById('catName').value,
@@ -254,18 +266,20 @@ function newCatalogItem(type) {
         var csrf = getCsrfToken();
         fetch('/api/catalog-items', {
             method: 'POST', credentials: 'same-origin',
-            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf },
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': csrf },
             body: JSON.stringify(payload)
-        }).then(function(r){ if(!r.ok) throw new Error('save'); return r.json(); })
+        }).then(function(r){ if(!r.ok) return r.text().then(function(t){ throw new Error(t||'save'); }); return r.json(); })
         .then(function(){
             close();
+            showToast('Guardado correctamente');
             // reload list
-            fetch('/api/catalog-items?type=' + encodeURIComponent(type), { credentials: 'same-origin' })
+            fetch('/api/catalog-items?type=' + encodeURIComponent(type), { credentials: 'same-origin', headers: { 'Accept': 'application/json' } })
               .then(function(r){ return r.json(); })
               .then(function(items){ renderCatalogList(items); });
-        }).catch(function(){
-            error.textContent = 'No se pudo guardar.';
+        }).catch(function(e){
+            error.textContent = 'No se pudo guardar. ' + (e && e.message ? e.message : '');
             error.style.display='block';
+        }).finally(function(){ submitBtn.disabled=false; submitBtn.textContent = oldText; });
         });
     });
 }
@@ -422,6 +436,8 @@ function newSession() {
         var errorBox = document.getElementById('sessionError');
         errorBox.style.display = 'none';
 
+        var submitBtn = document.getElementById('saveSessionBtn');
+        var oldText = submitBtn.textContent; submitBtn.disabled = true; submitBtn.innerHTML = '<span class="spinner"></span>';
         var payload = {
             listener_id: listenerIdEl.value || null,
             listener_name: listenerIdEl.value ? null : (listenerNameEl.value || null),
@@ -451,6 +467,7 @@ function newSession() {
             return r.json();
         }).then(function(){
             closeModal();
+            showToast('Sesión guardada');
         }).catch(function(err){
             var msg = (err && err.message) ? err.message : '';
             if (msg.indexOf('not-json') === 0) {
@@ -459,7 +476,7 @@ function newSession() {
                 errorBox.textContent = 'No se pudo guardar la sesión. ' + msg;
             }
             errorBox.style.display = 'block';
-        });
+        }).finally(function(){ submitBtn.disabled=false; submitBtn.textContent = oldText; });
     });
 }
 
@@ -483,6 +500,8 @@ document.addEventListener('DOMContentLoaded', function() {
       .then(function(r){ if(!r.ok) return null; return r.json(); })
       .then(function(user){ AppState.currentUser = user; renderApp(); })
       .catch(function(){ renderApp(); });
+    // Toast container
+    var tc = document.createElement('div'); tc.className='toast-container'; tc.id='toastContainer'; document.body.appendChild(tc);
     console.log('✅ Aplicación JavaScript estática iniciada correctamente');
 });
 
@@ -491,4 +510,18 @@ if (document.readyState === 'loading') {
     // Ya está configurado el event listener arriba
 } else {
     renderApp();
+}
+
+function getInitials(name) {
+    var s = String(name || '').trim();
+    if (!s) return '?';
+    var parts = s.split(/\s+/).filter(Boolean);
+    if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+    return (parts[0].charAt(0) + parts[parts.length-1].charAt(0)).toUpperCase();
+}
+
+function showToast(msg) {
+    var c = document.getElementById('toastContainer'); if (!c) return;
+    var t = document.createElement('div'); t.className='toast'; t.textContent = msg; c.appendChild(t);
+    setTimeout(function(){ if (t && t.parentNode) t.parentNode.removeChild(t); }, 3000);
 }
