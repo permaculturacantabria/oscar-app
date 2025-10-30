@@ -6,6 +6,8 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\PrivacyController;
+use App\Http\Controllers\ListenerController;
+use App\Http\Controllers\SessionController;
 
 Route::get('/', function () {
     return view('app');
@@ -34,3 +36,10 @@ Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->midd
 
 // Privacy Policy
 Route::get('/privacidad', [PrivacyController::class, 'show'])->name('privacy');
+
+// Web + session auth JSON endpoints
+Route::middleware('auth')->group(function () {
+    Route::get('/api/listeners', [ListenerController::class, 'index']);
+    Route::post('/api/listeners', [ListenerController::class, 'store']);
+    Route::post('/api/sessions', [SessionController::class, 'store']);
+});
