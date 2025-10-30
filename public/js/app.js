@@ -153,6 +153,24 @@ function renderContent() {
     
     const sectionContent = getSectionContent(AppState.activeSection);
 
+    // Vista especial: Mis sesiones
+    if (AppState.activeSection === 'sessions') {
+        content.innerHTML = '' +
+            '<main class="flex-1 p-6">' +
+            '  <div class="mb-8 flex items-center justify-between">' +
+            '    <div>' +
+            '      <h2 class="text-3xl font-bold text-gray-900 mb-2">Mis sesiones</h2>' +
+            '      <p class="text-gray-600 text-lg">Gestiona tus sesiones de escucha</p>' +
+            '    </div>' +
+            '    <button onclick="newSession()" class="btn btn-primary">Añadir sesión</button>' +
+            '  </div>' +
+            '  <div id="sessionList" class="grid grid-cols-1 gap-6"></div>' +
+            '</main>';
+
+        // TODO: Cargar y mostrar listado de sesiones cuando implementemos el endpoint
+        return;
+    }
+
     // Vista especial: Mis escuchas
     if (AppState.activeSection === 'listeners') {
         content.innerHTML = '' +
@@ -185,7 +203,7 @@ function renderContent() {
             '      <h2 class="text-3xl font-bold text-gray-900 mb-2">' + labels.title + '</h2>' +
             '      <p class="text-gray-600 text-lg">' + labels.subtitle + '</p>' +
             '    </div>' +
-            '    <button onclick="newCatalogItem(\'' + AppState.activeSection + '\')" class="bg-blue-600 hover:bg-blue-700 text-white rounded-lg py-2 px-4">Añadir</button>' +
+            '    <button onclick="newCatalogItem(\'' + AppState.activeSection + '\')" class="btn btn-primary">Añadir</button>' +
             '  </div>' +
             '  <div id="catalogList" class="grid grid-cols-1 gap-6"></div>' +
             '</main>';
@@ -319,12 +337,12 @@ function newCatalogItem(type) {
     '<div class="modal-body">'+
     '  <div id="catalogError" class="text-red-600 text-sm mb-2" style="display:none;"></div>'+
     '  <form id="catalogForm" class="space-y-4">'+
-    '    <div><label class="block text-sm mb-1">' + labels.name + '</label><input id="catName" type="text" class="w-full bg-gray-100 rounded px-3 py-2" required></div>'+
-    '    <div><label class="block text-sm mb-1">' + labels.description + '</label><textarea id="catDesc" rows="3" class="w-full bg-gray-100 rounded px-3 py-2"></textarea></div>'+
-    '    <div><label class="block text-sm mb-1">' + labels.notes + '</label><textarea id="catNotes" rows="3" class="w-full bg-gray-100 rounded px-3 py-2"></textarea></div>'+
+    '    <div><label class="label">' + labels.name + '</label><input id="catName" type="text" class="input" required></div>'+
+    '    <div><label class="label">' + labels.description + '</label><textarea id="catDesc" rows="3" class="input"></textarea></div>'+
+    '    <div><label class="label">' + labels.notes + '</label><textarea id="catNotes" rows="3" class="input"></textarea></div>'+
     '    <div class="flex justify-end gap-2 pt-2">'+
-    '      <button type="button" id="cancelCatalogBtn" class="px-4 py-2 rounded border border-gray-200">Cancelar</button>'+
-    '      <button type="submit" class="px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white">Guardar</button>'+
+    '      <button type="button" id="cancelCatalogBtn" class="btn btn-secondary">Cancelar</button>'+
+    '      <button type="submit" id="saveCatalogBtn" class="btn btn-primary">Guardar</button>'+
     '    </div>'+
     '  </form>'+
     '</div>';
@@ -338,7 +356,7 @@ function newCatalogItem(type) {
         e.preventDefault();
         var error = document.getElementById('catalogError');
         error.style.display='none';
-        var submitBtn = e.target.querySelector('button[type="submit"]');
+        var submitBtn = document.getElementById('saveCatalogBtn');
         var oldText = submitBtn.textContent; submitBtn.disabled = true; submitBtn.innerHTML = '<span class="spinner"></span>';
         var payload = {
             type: type,

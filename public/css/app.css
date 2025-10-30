@@ -262,8 +262,9 @@ button.transition-colors:active {
 .btn-secondary { background-color:#efeee9; color:#1a1a1a; }
 .btn-secondary:hover { background-color:#e7e5de; }
 
-.input { width:100%; background:#efeee9; color:#1a1a1a; padding:0.5rem 0.75rem; border-radius:0.5rem; border:1px solid #eceae4; }
+.input { width:100%; background:#efeee9; color:#1a1a1a; padding:0.5rem 0.75rem; border-radius:0.5rem; border:1px solid #eceae4; font-family:inherit; }
 .input:focus { outline:2px solid #ff931e33; box-shadow:0 0 0 2px #ff931e33; }
+textarea.input { min-height:80px; resize:vertical; }
 .label { display:block; font-size:0.875rem; color:#808080; margin-bottom:0.25rem; }
 
 .card { background:#fff; border:1px solid #eceae4; border-radius:0.75rem; padding:1rem; box-shadow:0 1px 2px rgba(0,0,0,.04); }
