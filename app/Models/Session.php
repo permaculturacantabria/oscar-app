@@ -9,6 +9,8 @@ class Session extends Model
 {
     use HasFactory;
 
+    protected $table = 'app_sessions';
+
     protected $fillable = [
         'user_id',
         'listener_id',
