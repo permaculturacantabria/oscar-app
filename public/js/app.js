@@ -363,7 +363,6 @@ function newCatalogItem(type) {
             error.textContent = 'No se pudo guardar. ' + (e && e.message ? e.message : '');
             error.style.display='block';
         }).finally(function(){ submitBtn.disabled=false; submitBtn.textContent = oldText; });
-        });
     });
 }
 
