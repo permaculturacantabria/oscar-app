@@ -179,14 +179,160 @@ function handleMenuClick(itemId, hasSubmenu) {
     }
 }
 
+function getCsrfToken() {
+    var meta = document.querySelector('meta[name="csrf-token"]');
+    return meta ? meta.getAttribute('content') : '';
+}
+
 function newSession() {
-    alert('Nueva sesión - Funcionalidad en desarrollo');
+    // Crear overlay
+    var overlay = document.createElement('div');
+    overlay.className = 'fixed inset-0';
+    overlay.style.position = 'fixed';
+    overlay.style.inset = '0';
+    overlay.style.background = 'rgba(0,0,0,0.5)';
+    overlay.style.display = 'flex';
+    overlay.style.alignItems = 'center';
+    overlay.style.justifyContent = 'center';
+    overlay.style.zIndex = '9999';
+
+    // Modal contenido
+    var modal = document.createElement('div');
+    modal.className = 'bg-white rounded-lg shadow-md';
+    modal.style.width = '100%';
+    modal.style.maxWidth = '600px';
+    modal.style.background = '#ffffff';
+
+    modal.innerHTML = '' +
+        '<div class="border-b border-gray-200 px-4 py-3 flex items-center justify-between">' +
+        '  <h2 class="text-lg font-semibold text-gray-900">Añadir sesión</h2>' +
+        '  <button id="closeSessionModal" class="text-gray-500 hover:text-gray-900">✕</button>' +
+        '</div>' +
+        '<div class="p-4" id="sessionFormContainer">' +
+        '  <div id="sessionError" class="text-red-600 text-sm mb-2" style="display:none;"></div>' +
+        '  <form id="sessionForm" class="space-y-4">' +
+        '    <div>' +
+        '      <label class="block text-sm mb-1">Escucha (seleccionar)</label>' +
+        '      <select id="listenerId" class="w-full bg-gray-100 rounded px-3 py-2"><option value="">— Ninguno —</option></select>' +
+        '    </div>' +
+        '    <div>' +
+        '      <label class="block text-sm mb-1">O nombre de nuevo escucha</label>' +
+        '      <input id="listenerName" type="text" class="w-full bg-gray-100 rounded px-3 py-2" placeholder="Nombre del escucha" />' +
+        '    </div>' +
+        '    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">' +
+        '      <div>' +
+        '        <label class="block text-sm mb-1">Día</label>' +
+        '        <input id="dateField" type="date" class="w-full bg-gray-100 rounded px-3 py-2" required />' +
+        '      </div>' +
+        '      <div>' +
+        '        <label class="block text-sm mb-1">Hora</label>' +
+        '        <input id="timeField" type="time" class="w-full bg-gray-100 rounded px-3 py-2" required />' +
+        '      </div>' +
+        '    </div>' +
+        '    <div>' +
+        '      <label class="block text-sm mb-1">Estado</label>' +
+        '      <select id="statusField" class="w-full bg-gray-100 rounded px-3 py-2">' +
+        '        <option value="pendiente">Pendiente</option>' +
+        '        <option value="realizada">Realizada</option>' +
+        '      </select>' +
+        '    </div>' +
+        '    <div>' +
+        '      <label class="block text-sm mb-1">Notas</label>' +
+        '      <textarea id="notesField" rows="4" class="w-full bg-gray-100 rounded px-3 py-2" placeholder="Notas de la sesión..."></textarea>' +
+        '    </div>' +
+        '    <div class="flex justify-end gap-2 pt-2">' +
+        '      <button type="button" id="cancelSessionBtn" class="px-4 py-2 rounded border border-gray-200">Cancelar</button>' +
+        '      <button type="submit" id="saveSessionBtn" class="px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white">Guardar sesión</button>' +
+        '    </div>' +
+        '  </form>' +
+        '</div>';
+
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+
+    // Cerrar modal
+    function closeModal() {
+        if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
+    }
+    document.getElementById('closeSessionModal').addEventListener('click', closeModal);
+    document.getElementById('cancelSessionBtn').addEventListener('click', closeModal);
+
+    // Deshabilitar nombre si se elige listener existente
+    var listenerIdEl = document.getElementById('listenerId');
+    var listenerNameEl = document.getElementById('listenerName');
+    listenerIdEl.addEventListener('change', function() {
+        listenerNameEl.disabled = !!listenerIdEl.value;
+        if (listenerNameEl.disabled) listenerNameEl.value = '';
+    });
+
+    // Cargar listeners
+    fetch('/api/listeners', { credentials: 'same-origin' })
+        .then(function(r){ if(!r.ok) throw new Error('fail'); return r.json(); })
+        .then(function(list){
+            var select = document.getElementById('listenerId');
+            list.forEach(function(l){
+                var opt = document.createElement('option');
+                opt.value = l.id;
+                opt.textContent = l.name;
+                select.appendChild(opt);
+            });
+        })
+        .catch(function(){ /* silencioso */ });
+
+    function combineDateTime(dateStr, timeStr) {
+        if (!dateStr || !timeStr) return '';
+        return new Date(dateStr + 'T' + timeStr + ':00').toISOString();
+    }
+
+    // Submit
+    document.getElementById('sessionForm').addEventListener('submit', function(e){
+        e.preventDefault();
+        var errorBox = document.getElementById('sessionError');
+        errorBox.style.display = 'none';
+
+        var payload = {
+            listener_id: listenerIdEl.value || null,
+            listener_name: listenerIdEl.value ? null : (listenerNameEl.value || null),
+            scheduled_at: combineDateTime(
+                document.getElementById('dateField').value,
+                document.getElementById('timeField').value
+            ),
+            status: document.getElementById('statusField').value,
+            notes: document.getElementById('notesField').value || null,
+            categories: null
+        };
+
+        var csrf = getCsrfToken();
+        fetch('/api/sessions', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrf
+            },
+            body: JSON.stringify(payload)
+        }).then(function(r){
+            if (!r.ok) throw new Error('save-error');
+            return r.json();
+        }).then(function(){
+            closeModal();
+        }).catch(function(){
+            errorBox.textContent = 'No se pudo guardar la sesión.';
+            errorBox.style.display = 'block';
+        });
+    });
 }
 
 function logout() {
-    if (confirm('¿Estás seguro de que quieres salir?')) {
-        window.location.href = '/logout';
-    }
+    if (!confirm('¿Estás seguro de que quieres salir?')) return;
+    var csrf = getCsrfToken();
+    fetch('/logout', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'X-CSRF-TOKEN': csrf }
+    }).then(function(){
+        window.location.href = '/login';
+    });
 }
 
 // Inicialización
