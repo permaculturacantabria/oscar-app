@@ -3,11 +3,13 @@ import { motion } from 'framer-motion';
 import Sidebar from './Sidebar';
 import Topbar from './Topbar';
 import Placeholder from './Placeholder';
+import SessionForm from './SessionForm';
 
 const AppLayout = () => {
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
     const [activeSection, setActiveSection] = useState('dashboard');
     const [darkMode, setDarkMode] = useState(true);
+    const [showSessionForm, setShowSessionForm] = useState(false);
 
     const toggleSidebar = () => {
         setSidebarCollapsed(!sidebarCollapsed);
@@ -27,6 +29,7 @@ const AppLayout = () => {
                     setActiveSection={setActiveSection}
                     darkMode={darkMode}
                     toggleDarkMode={toggleDarkMode}
+                    onNewSession={() => setShowSessionForm(true)}
                 />
 
                 {/* Main Content Area */}
@@ -41,6 +44,12 @@ const AppLayout = () => {
                     {/* Main Content */}
                     <main className="flex-1 p-6">
                         <Placeholder activeSection={activeSection} />
+                        {showSessionForm && (
+                            <SessionForm
+                                onClose={() => setShowSessionForm(false)}
+                                onCreated={() => setShowSessionForm(false)}
+                            />
+                        )}
                     </main>
                 </div>
             </div>

@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import SidebarItem from './SidebarItem';
 
-const Sidebar = ({ collapsed, activeSection, setActiveSection, darkMode, toggleDarkMode }) => {
+const Sidebar = ({ collapsed, activeSection, setActiveSection, darkMode, toggleDarkMode, onNewSession }) => {
     const [catalogsExpanded, setCatalogsExpanded] = useState(false);
 
     const menuItems = [
@@ -164,7 +164,7 @@ const Sidebar = ({ collapsed, activeSection, setActiveSection, darkMode, toggleD
             {/* Bottom Actions */}
             <div className="p-4 border-t border-gray-800 dark:border-gray-700 space-y-2">
                 {/* New Session Button */}
-                <button className="w-full flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg py-2 px-3 transition-colors">
+                <button onClick={onNewSession} className="w-full flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg py-2 px-3 transition-colors">
                     <Plus size={16} />
                     <AnimatePresence>
                         {!collapsed && (
