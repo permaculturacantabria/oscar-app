@@ -12,7 +12,7 @@ class ListenerController extends Controller
     {
         $listeners = Listener::where('user_id', Auth::id())
             ->orderBy('name')
-            ->get(['id', 'name', 'last_name', 'email', 'phone']);
+            ->get(['id', 'name', 'last_name', 'email', 'phone', 'created_at', 'updated_at']);
         return response()->json($listeners);
     }
 

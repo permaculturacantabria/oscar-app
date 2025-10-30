@@ -32,8 +32,8 @@ class CatalogItemController extends Controller
 
         $items = CatalogItem::where('user_id', Auth::id())
             ->where('type', $type)
-            ->orderBy('created_at', 'desc')
-            ->get(['id', 'name', 'description', 'notes', 'created_at']);
+            ->orderBy('updated_at', 'desc')
+            ->get(['id', 'name', 'description', 'notes', 'created_at', 'updated_at']);
 
         return response()->json($items);
     }

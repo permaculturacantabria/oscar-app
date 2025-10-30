@@ -246,12 +246,15 @@ function renderCatalogList(items, type) {
         return;
     }
     list.innerHTML = items.map(function(it){
+        var lastUpdate = it.updated_at ? formatDate(it.updated_at) : '';
+        var isNew = it.created_at && it.updated_at && new Date(it.created_at).getTime() === new Date(it.updated_at).getTime();
         return '<div class="card">' +
                '  <div class="flex items-center justify-between">' +
                '    <div class="flex-1">' +
                '      <h4 class="text-lg font-semibold text-gray-900 mb-1">' + escapeHtml(it.name) + '</h4>' +
                '      <p class="text-gray-600 mb-2">' + (it.description ? escapeHtml(it.description) : '') + '</p>' +
-               '      <div class="text-sm text-gray-500">' + (it.notes ? escapeHtml(it.notes) : '') + '</div>' +
+               '      <div class="text-sm text-gray-500 mb-1">' + (it.notes ? escapeHtml(it.notes) : '') + '</div>' +
+               '      <div class="text-xs text-gray-500">' + (isNew ? 'Creado' : 'Actualizado') + ': ' + lastUpdate + '</div>' +
                '    </div>' +
                '    <button onclick="editCatalogItem(' + it.id + ', \'' + type + '\')" class="btn btn-secondary" style="margin-left:1rem;">Editar</button>' +
                '  </div>' +
@@ -268,11 +271,14 @@ function renderListenerList(items) {
     }
     list.innerHTML = items.map(function(it){
         var fullName = escapeHtml([it.name, it.last_name || ''].join(' ').trim());
+        var lastUpdate = it.updated_at ? formatDate(it.updated_at) : '';
+        var isNew = it.created_at && it.updated_at && new Date(it.created_at).getTime() === new Date(it.updated_at).getTime();
         return '<div class="card">' +
                '  <div class="flex items-center justify-between">' +
                '    <div class="flex-1">' +
                '      <div class="text-lg font-semibold text-gray-900">' + fullName + '</div>' +
-               '      <div class="text-sm text-gray-600">' + (it.email ? escapeHtml(it.email) : '') + (it.phone ? ' · ' + escapeHtml(it.phone) : '') + '</div>' +
+               '      <div class="text-sm text-gray-600 mb-1">' + (it.email ? escapeHtml(it.email) : '') + (it.phone ? ' · ' + escapeHtml(it.phone) : '') + '</div>' +
+               '      <div class="text-xs text-gray-500">' + (isNew ? 'Creado' : 'Actualizado') + ': ' + lastUpdate + '</div>' +
                '    </div>' +
                '    <button onclick="editListener(' + it.id + ')" class="btn btn-secondary" style="margin-left:1rem;">Editar</button>' +
                '  </div>' +
@@ -285,6 +291,24 @@ function escapeHtml(s) {
     var div = document.createElement('div');
     div.textContent = String(s);
     return div.innerHTML;
+}
+
+function formatDate(dateStr) {
+    if (!dateStr) return '';
+    var d = new Date(dateStr);
+    if (isNaN(d.getTime())) return '';
+    var now = new Date();
+    var diffMs = now - d;
+    var diffMins = Math.floor(diffMs / 60000);
+    var diffHours = Math.floor(diffMs / 3600000);
+    var diffDays = Math.floor(diffMs / 86400000);
+    
+    if (diffMins < 1) return 'Hace un momento';
+    if (diffMins < 60) return 'Hace ' + diffMins + (diffMins === 1 ? ' minuto' : ' minutos');
+    if (diffHours < 24) return 'Hace ' + diffHours + (diffHours === 1 ? ' hora' : ' horas');
+    if (diffDays < 7) return 'Hace ' + diffDays + (diffDays === 1 ? ' día' : ' días');
+    
+    return d.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 }
 
 function newListener(id) {
