@@ -43,11 +43,16 @@ Route::view('/terminos', 'terms')->name('terms');
 Route::middleware('auth')->group(function () {
     Route::get('/api/listeners', [ListenerController::class, 'index']);
     Route::post('/api/listeners', [ListenerController::class, 'store']);
+    Route::get('/api/listeners/{id}', [ListenerController::class, 'show']);
+    Route::put('/api/listeners/{id}', [ListenerController::class, 'update']);
+    
     Route::post('/api/sessions', [SessionController::class, 'store']);
 
     // Catalog items
     Route::get('/api/catalog-items', [CatalogItemController::class, 'index']);
     Route::post('/api/catalog-items', [CatalogItemController::class, 'store']);
+    Route::get('/api/catalog-items/{id}', [CatalogItemController::class, 'show']);
+    Route::put('/api/catalog-items/{id}', [CatalogItemController::class, 'update']);
 
     // Current user info (session-based)
     Route::get('/api/me', function() {

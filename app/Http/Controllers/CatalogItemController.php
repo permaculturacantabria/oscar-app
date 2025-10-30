@@ -61,6 +61,31 @@ class CatalogItemController extends Controller
 
         return response()->json($item, 201);
     }
+
+    public function show($id)
+    {
+        $item = CatalogItem::where('user_id', Auth::id())->findOrFail($id);
+        return response()->json($item);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $item = CatalogItem::where('user_id', Auth::id())->findOrFail($id);
+
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'notes' => ['nullable', 'string'],
+        ]);
+
+        $item->update([
+            'name' => $validated['name'],
+            'description' => $validated['description'] ?? null,
+            'notes' => $validated['notes'] ?? null,
+        ]);
+
+        return response()->json($item);
+    }
 }
 
 

@@ -210,8 +210,8 @@ function renderContent() {
 
     fetch('/api/catalog-items?type=' + encodeURIComponent(AppState.activeSection), { credentials: 'same-origin', headers: { 'Accept': 'application/json' } })
             .then(function(r){ if(!r.ok) throw new Error('load'); return r.json(); })
-            .then(function(items){ renderCatalogList(items); })
-            .catch(function(){ renderCatalogList([]); });
+            .then(function(items){ renderCatalogList(items, AppState.activeSection); })
+            .catch(function(){ renderCatalogList([], AppState.activeSection); });
 
         return;
     }
@@ -238,18 +238,23 @@ function getCatalogLabels(type) {
     return map[type] || { title: 'Catálogo', name: 'Nombre', description: 'Descripción', notes: 'Notas', subtitle: '' };
 }
 
-function renderCatalogList(items) {
+function renderCatalogList(items, type) {
     const list = document.getElementById('catalogList');
     if (!list) return;
     if (!items || !items.length) {
-        list.innerHTML = '<div class="text-gray-600">No hay registros todavía.</div>';
+        list.innerHTML = '<div class="empty-state">No hay registros todavía.</div>';
         return;
     }
     list.innerHTML = items.map(function(it){
-        return '<div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">' +
-               '  <h4 class="text-lg font-semibold text-gray-900 mb-1">' + escapeHtml(it.name) + '</h4>' +
-               '  <p class="text-gray-600 mb-2">' + (it.description ? escapeHtml(it.description) : '') + '</p>' +
-               '  <div class="text-sm text-gray-500">' + (it.notes ? escapeHtml(it.notes) : '') + '</div>' +
+        return '<div class="card">' +
+               '  <div class="flex items-center justify-between">' +
+               '    <div class="flex-1">' +
+               '      <h4 class="text-lg font-semibold text-gray-900 mb-1">' + escapeHtml(it.name) + '</h4>' +
+               '      <p class="text-gray-600 mb-2">' + (it.description ? escapeHtml(it.description) : '') + '</p>' +
+               '      <div class="text-sm text-gray-500">' + (it.notes ? escapeHtml(it.notes) : '') + '</div>' +
+               '    </div>' +
+               '    <button onclick="editCatalogItem(' + it.id + ', \'' + type + '\')" class="btn btn-secondary" style="margin-left:1rem;">Editar</button>' +
+               '  </div>' +
                '</div>';
     }).join('');
 }
@@ -265,10 +270,11 @@ function renderListenerList(items) {
         var fullName = escapeHtml([it.name, it.last_name || ''].join(' ').trim());
         return '<div class="card">' +
                '  <div class="flex items-center justify-between">' +
-               '    <div>' +
+               '    <div class="flex-1">' +
                '      <div class="text-lg font-semibold text-gray-900">' + fullName + '</div>' +
                '      <div class="text-sm text-gray-600">' + (it.email ? escapeHtml(it.email) : '') + (it.phone ? ' · ' + escapeHtml(it.phone) : '') + '</div>' +
                '    </div>' +
+               '    <button onclick="editListener(' + it.id + ')" class="btn btn-secondary" style="margin-left:1rem;">Editar</button>' +
                '  </div>' +
                '</div>';
     }).join('');
@@ -281,12 +287,13 @@ function escapeHtml(s) {
     return div.innerHTML;
 }
 
-function newListener() {
+function newListener(id) {
+    var isEdit = !!id;
     var overlay = document.createElement('div'); overlay.className='modal-overlay';
     var modal = document.createElement('div'); modal.className='modal';
     modal.innerHTML = ''+
     '<div class="modal-header">'+
-    '  <h2 class="text-lg font-semibold text-gray-900">Añadir escucha</h2>'+
+    '  <h2 class="text-lg font-semibold text-gray-900">' + (isEdit ? 'Editar escucha' : 'Añadir escucha') + '</h2>'+
     '  <button id="closeListenerModal" class="text-gray-500 hover:text-gray-900">✕</button>'+
     '</div>'+
     '<div class="modal-body">'+
@@ -298,7 +305,7 @@ function newListener() {
     '    <div><label class="label">Teléfono</label><input id="lnPhone" type="text" class="input"></div>'+
     '    <div class="flex justify-end gap-2 pt-2">'+
     '      <button type="button" id="cancelListenerBtn" class="btn btn-secondary">Cancelar</button>'+
-    '      <button type="submit" class="btn btn-primary" id="saveListenerBtn">Guardar</button>'+
+    '      <button type="submit" class="btn btn-primary" id="saveListenerBtn">' + (isEdit ? 'Actualizar' : 'Guardar') + '</button>'+
     '    </div>'+
     '  </form>'+
     '</div>';
@@ -307,14 +314,30 @@ function newListener() {
     function close(){ if (overlay.parentNode) overlay.parentNode.removeChild(overlay); }
     document.getElementById('closeListenerModal').addEventListener('click', close);
     document.getElementById('cancelListenerBtn').addEventListener('click', close);
+    
+    // Cargar datos si es edición
+    if (isEdit) {
+        fetch('/api/listeners/' + id, { credentials:'same-origin', headers:{ 'Accept':'application/json' }})
+          .then(function(r){ if(!r.ok) throw new Error('load'); return r.json(); })
+          .then(function(data){
+              document.getElementById('lnName').value = data.name || '';
+              document.getElementById('lnLast').value = data.last_name || '';
+              document.getElementById('lnEmail').value = data.email || '';
+              document.getElementById('lnPhone').value = data.phone || '';
+          })
+          .catch(function(){ close(); showToast('No se pudo cargar el escucha'); });
+    }
+    
     document.getElementById('listenerForm').addEventListener('submit', function(e){
         e.preventDefault(); var err = document.getElementById('listenerError'); err.style.display='none';
         var btn = document.getElementById('saveListenerBtn'); var old = btn.textContent; btn.disabled=true; btn.innerHTML='<span class="spinner"></span>';
         var payload = { name: document.getElementById('lnName').value, last_name: document.getElementById('lnLast').value || null, email: document.getElementById('lnEmail').value || null, phone: document.getElementById('lnPhone').value || null };
         var csrf = getCsrfToken();
-        fetch('/api/listeners', { method:'POST', credentials:'same-origin', headers:{ 'Content-Type':'application/json', 'Accept':'application/json', 'X-CSRF-TOKEN': csrf }, body: JSON.stringify(payload) })
+        var url = isEdit ? '/api/listeners/' + id : '/api/listeners';
+        var method = isEdit ? 'PUT' : 'POST';
+        fetch(url, { method:method, credentials:'same-origin', headers:{ 'Content-Type':'application/json', 'Accept':'application/json', 'X-CSRF-TOKEN': csrf }, body: JSON.stringify(payload) })
           .then(function(r){ if(!r.ok) return r.text().then(function(t){ throw new Error(t||'save');}); return r.json(); })
-          .then(function(){ close(); showToast('Escucha guardado');
+          .then(function(){ close(); showToast(isEdit ? 'Escucha actualizado' : 'Escucha guardado');
             return fetch('/api/listeners', { credentials:'same-origin', headers:{ 'Accept':'application/json' }})
               .then(function(r){ return r.json(); }).then(function(items){ renderListenerList(items); });
           })
@@ -323,7 +346,12 @@ function newListener() {
     });
 }
 
-function newCatalogItem(type) {
+function editListener(id) {
+    newListener(id);
+}
+
+function newCatalogItem(type, id) {
+    var isEdit = !!id;
     const labels = getCatalogLabels(type);
     var overlay = document.createElement('div');
     overlay.className='modal-overlay';
@@ -331,7 +359,7 @@ function newCatalogItem(type) {
     modal.className='modal';
     modal.innerHTML = ''+
     '<div class="modal-header">'+
-    '  <h2 class="text-lg font-semibold text-gray-900">Añadir a ' + labels.title + '</h2>'+
+    '  <h2 class="text-lg font-semibold text-gray-900">' + (isEdit ? 'Editar ' : 'Añadir a ') + labels.title + '</h2>'+
     '  <button id="closeCatalogModal" class="text-gray-500 hover:text-gray-900">✕</button>'+
     '</div>'+
     '<div class="modal-body">'+
@@ -342,7 +370,7 @@ function newCatalogItem(type) {
     '    <div><label class="label">' + labels.notes + '</label><textarea id="catNotes" rows="3" class="input"></textarea></div>'+
     '    <div class="flex justify-end gap-2 pt-2">'+
     '      <button type="button" id="cancelCatalogBtn" class="btn btn-secondary">Cancelar</button>'+
-    '      <button type="submit" id="saveCatalogBtn" class="btn btn-primary">Guardar</button>'+
+    '      <button type="submit" id="saveCatalogBtn" class="btn btn-primary">' + (isEdit ? 'Actualizar' : 'Guardar') + '</button>'+
     '    </div>'+
     '  </form>'+
     '</div>';
@@ -352,6 +380,19 @@ function newCatalogItem(type) {
     function close() { if (overlay.parentNode) overlay.parentNode.removeChild(overlay); }
     document.getElementById('closeCatalogModal').addEventListener('click', close);
     document.getElementById('cancelCatalogBtn').addEventListener('click', close);
+    
+    // Cargar datos si es edición
+    if (isEdit) {
+        fetch('/api/catalog-items/' + id, { credentials:'same-origin', headers:{ 'Accept':'application/json' }})
+          .then(function(r){ if(!r.ok) throw new Error('load'); return r.json(); })
+          .then(function(data){
+              document.getElementById('catName').value = data.name || '';
+              document.getElementById('catDesc').value = data.description || '';
+              document.getElementById('catNotes').value = data.notes || '';
+          })
+          .catch(function(){ close(); showToast('No se pudo cargar el registro'); });
+    }
+    
     document.getElementById('catalogForm').addEventListener('submit', function(e){
         e.preventDefault();
         var error = document.getElementById('catalogError');
@@ -359,29 +400,35 @@ function newCatalogItem(type) {
         var submitBtn = document.getElementById('saveCatalogBtn');
         var oldText = submitBtn.textContent; submitBtn.disabled = true; submitBtn.innerHTML = '<span class="spinner"></span>';
         var payload = {
-            type: type,
             name: document.getElementById('catName').value,
             description: document.getElementById('catDesc').value || null,
             notes: document.getElementById('catNotes').value || null
         };
+        if (!isEdit) payload.type = type;
         var csrf = getCsrfToken();
-        fetch('/api/catalog-items', {
-            method: 'POST', credentials: 'same-origin',
+        var url = isEdit ? '/api/catalog-items/' + id : '/api/catalog-items';
+        var method = isEdit ? 'PUT' : 'POST';
+        fetch(url, {
+            method: method, credentials: 'same-origin',
             headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': csrf },
             body: JSON.stringify(payload)
         }).then(function(r){ if(!r.ok) return r.text().then(function(t){ throw new Error(t||'save'); }); return r.json(); })
         .then(function(){
             close();
-            showToast('Guardado correctamente');
+            showToast(isEdit ? 'Actualizado correctamente' : 'Guardado correctamente');
             // reload list
             fetch('/api/catalog-items?type=' + encodeURIComponent(type), { credentials: 'same-origin', headers: { 'Accept': 'application/json' } })
               .then(function(r){ return r.json(); })
-              .then(function(items){ renderCatalogList(items); });
+              .then(function(items){ renderCatalogList(items, type); });
         }).catch(function(e){
             error.textContent = 'No se pudo guardar. ' + (e && e.message ? e.message : '');
             error.style.display='block';
         }).finally(function(){ submitBtn.disabled=false; submitBtn.textContent = oldText; });
     });
+}
+
+function editCatalogItem(id, type) {
+    newCatalogItem(type, id);
 }
 
 // Event handlers
