@@ -317,6 +317,16 @@ function renderSessionList(items) {
                 scheduledAtFormatted = scheduledDate;
             }
         }
+        var buttonsHtml = '';
+        if (it.status === 'pendiente') {
+            buttonsHtml = '<div class="flex gap-2" style="flex-shrink:0;">' +
+                         '  <button onclick="markSessionAsDone(' + it.id + ')" class="btn btn-primary">Realizada</button>' +
+                         '  <button onclick="editSession(' + it.id + ')" class="btn btn-secondary">Editar</button>' +
+                         '</div>';
+        } else {
+            buttonsHtml = '<button onclick="editSession(' + it.id + ')" class="btn btn-secondary flex-shrink-0">Editar</button>';
+        }
+        
         return '<div class="card" style="max-width:100%;">' +
                '  <div class="flex items-center justify-between" style="gap:1rem;">' +
                '    <div class="flex-1" style="min-width:0; overflow:hidden;">' +
@@ -328,7 +338,7 @@ function renderSessionList(items) {
                '      <div class="text-sm text-gray-500 mb-1 text-clamp-2">' + (it.notes ? escapeHtml(it.notes) : '') + '</div>' +
                '      <div class="text-xs text-gray-500">' + (isNew ? 'Creado' : 'Actualizado') + ': ' + lastUpdate + '</div>' +
                '    </div>' +
-               '    <button onclick="editSession(' + it.id + ')" class="btn btn-secondary flex-shrink-0">Editar</button>' +
+               buttonsHtml +
                '  </div>' +
                '</div>';
     }).join('');
@@ -677,7 +687,7 @@ function newSession(id) {
         var oldText = submitBtn.textContent; submitBtn.disabled = true; submitBtn.innerHTML = '<span class="spinner"></span>';
         var payload = {
             listener_id: listenerIdEl.value || null,
-            listener_name: listenerIdEl.value ? null : (listenerNameEl.value || null),
+            listener_name: listenerIdEl.value ? (listenerIdEl.options[listenerIdEl.selectedIndex]?.text || null) : (listenerNameEl.value || null),
             scheduled_at: combineDateTime(
                 document.getElementById('dateField').value,
                 document.getElementById('timeField').value
@@ -728,6 +738,34 @@ function newSession(id) {
 
 function editSession(id) {
     newSession(id);
+}
+
+function markSessionAsDone(id) {
+    var csrf = getCsrfToken();
+    fetch('/api/sessions/' + id, {
+        method: 'PUT',
+        credentials: 'same-origin',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': csrf
+        },
+        body: JSON.stringify({ status: 'realizada' })
+    }).then(function(r){
+        if (!r.ok) return r.text().then(function(t){ throw new Error(t || 'update-error'); });
+        return r.json();
+    }).then(function(){
+        showToast('Sesión marcada como realizada');
+        // Recargar lista de sesiones si estamos en la sección de sesiones
+        if (AppState.activeSection === 'sessions') {
+            fetch('/api/sessions', { credentials: 'same-origin', headers: { 'Accept': 'application/json' } })
+              .then(function(r){ if(!r.ok) throw new Error('load'); return r.json(); })
+              .then(function(items){ renderSessionList(items); })
+              .catch(function(){ renderSessionList([]); });
+        }
+    }).catch(function(err){
+        showToast('Error al actualizar la sesión: ' + (err && err.message ? err.message : ''));
+    });
 }
 
 function logout() {
