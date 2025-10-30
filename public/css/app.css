@@ -272,6 +272,7 @@ button.transition-colors:active {
 
 .input { width:100%; background:#efeee9; color:#1a1a1a; padding:0.5rem 0.75rem; border-radius:0.5rem; border:1px solid #eceae4; font-family:inherit; }
 .input:focus { outline:2px solid #ff931e33; box-shadow:0 0 0 2px #ff931e33; }
+select.input { cursor:pointer; }
 textarea.input { min-height:80px; resize:vertical; }
 .label { display:block; font-size:0.875rem; color:#808080; margin-bottom:0.25rem; }
 

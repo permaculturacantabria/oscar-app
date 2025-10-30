@@ -552,62 +552,52 @@ function newSession(id) {
     var isEdit = !!id;
     // Crear overlay
     var overlay = document.createElement('div');
-    overlay.className = 'fixed inset-0';
-    overlay.style.position = 'fixed';
-    overlay.style.inset = '0';
-    overlay.style.background = 'rgba(0,0,0,0.5)';
-    overlay.style.display = 'flex';
-    overlay.style.alignItems = 'center';
-    overlay.style.justifyContent = 'center';
-    overlay.style.zIndex = '9999';
-
+    overlay.className = 'modal-overlay';
+    
     // Modal contenido
     var modal = document.createElement('div');
-    modal.className = 'bg-white rounded-lg shadow-md';
-    modal.style.width = '100%';
-    modal.style.maxWidth = '600px';
-    modal.style.background = '#ffffff';
+    modal.className = 'modal';
 
     modal.innerHTML = '' +
-        '<div class="border-b border-gray-200 px-4 py-3 flex items-center justify-between">' +
+        '<div class="modal-header">' +
         '  <h2 class="text-lg font-semibold text-gray-900">' + (isEdit ? 'Editar sesión' : 'Añadir sesión') + '</h2>' +
         '  <button id="closeSessionModal" class="text-gray-500 hover:text-gray-900">✕</button>' +
         '</div>' +
-        '<div class="p-4" id="sessionFormContainer">' +
+        '<div class="modal-body">' +
         '  <div id="sessionError" class="text-red-600 text-sm mb-2" style="display:none;"></div>' +
         '  <form id="sessionForm" class="space-y-4">' +
         '    <div>' +
-        '      <label class="block text-sm mb-1">Escucha (seleccionar)</label>' +
-        '      <select id="listenerId" class="w-full bg-gray-100 rounded px-3 py-2"><option value="">— Ninguno —</option></select>' +
+        '      <label class="label">Escucha (seleccionar)</label>' +
+        '      <select id="listenerId" class="input"><option value="">— Ninguno —</option></select>' +
         '    </div>' +
         '    <div>' +
-        '      <label class="block text-sm mb-1">O nombre de nuevo escucha</label>' +
-        '      <input id="listenerName" type="text" class="w-full bg-gray-100 rounded px-3 py-2" placeholder="Nombre del escucha" />' +
+        '      <label class="label">O nombre de nuevo escucha</label>' +
+        '      <input id="listenerName" type="text" class="input" placeholder="Nombre del escucha" />' +
         '    </div>' +
         '    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">' +
         '      <div>' +
-        '        <label class="block text-sm mb-1">Día</label>' +
-        '        <input id="dateField" type="date" class="w-full bg-gray-100 rounded px-3 py-2" required />' +
+        '        <label class="label">Día</label>' +
+        '        <input id="dateField" type="date" class="input" required />' +
         '      </div>' +
         '      <div>' +
-        '        <label class="block text-sm mb-1">Hora</label>' +
-        '        <input id="timeField" type="time" class="w-full bg-gray-100 rounded px-3 py-2" required />' +
+        '        <label class="label">Hora</label>' +
+        '        <input id="timeField" type="time" class="input" required />' +
         '      </div>' +
         '    </div>' +
         '    <div>' +
-        '      <label class="block text-sm mb-1">Estado</label>' +
-        '      <select id="statusField" class="w-full bg-gray-100 rounded px-3 py-2">' +
+        '      <label class="label">Estado</label>' +
+        '      <select id="statusField" class="input">' +
         '        <option value="pendiente">Pendiente</option>' +
         '        <option value="realizada">Realizada</option>' +
         '      </select>' +
         '    </div>' +
         '    <div>' +
-        '      <label class="block text-sm mb-1">Notas</label>' +
-        '      <textarea id="notesField" rows="4" class="w-full bg-gray-100 rounded px-3 py-2" placeholder="Notas de la sesión..."></textarea>' +
+        '      <label class="label">Notas</label>' +
+        '      <textarea id="notesField" rows="4" class="input" placeholder="Notas de la sesión..."></textarea>' +
         '    </div>' +
         '    <div class="flex justify-end gap-2 pt-2">' +
-        '      <button type="button" id="cancelSessionBtn" class="px-4 py-2 rounded border border-gray-200">Cancelar</button>' +
-        '      <button type="submit" id="saveSessionBtn" class="px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white">' + (isEdit ? 'Actualizar sesión' : 'Guardar sesión') + '</button>' +
+        '      <button type="button" id="cancelSessionBtn" class="btn btn-secondary">Cancelar</button>' +
+        '      <button type="submit" id="saveSessionBtn" class="btn btn-primary">' + (isEdit ? 'Actualizar' : 'Guardar') + '</button>' +
         '    </div>' +
         '  </form>' +
         '</div>';
