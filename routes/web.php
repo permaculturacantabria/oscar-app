@@ -37,6 +37,7 @@ Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->midd
 
 // Privacy Policy
 Route::get('/privacidad', [PrivacyController::class, 'show'])->name('privacy');
+Route::view('/terminos', 'terms')->name('terms');
 
 // Web + session auth JSON endpoints
 Route::middleware('auth')->group(function () {

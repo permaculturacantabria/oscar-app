@@ -13,7 +13,7 @@ class RegisteredUserController extends Controller
 {
     public function create()
     {
-        return view('auth.register');
+        return view('auth.auth');
     }
 
     public function store(Request $request)
@@ -22,12 +22,14 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'confirmed', 'min:8'],
+            'terms' => ['accepted'],
         ]);
 
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
+            'terms_accepted_at' => now(),
         ]);
 
         event(new Registered($user));
