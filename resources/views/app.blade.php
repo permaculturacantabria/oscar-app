@@ -29,9 +29,9 @@
         }
     </style>
     
-    <!-- Emergency Solution: Direct asset URLs with HTTPS -->
-    <link rel="stylesheet" href="https://diariosesionesapp-diarioapp.txuo5.easypanel.host/css/app.css">
-    <script src="https://diariosesionesapp-diarioapp.txuo5.easypanel.host/js/app.js" defer></script>
+    <!-- Cargar assets locales del mismo dominio -->
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <script src="{{ asset('js/app.js') }}" defer></script>
 </head>
 <body class="antialiased">
     <div id="app">
